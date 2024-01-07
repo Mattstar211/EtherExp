@@ -1,0 +1,10 @@
+name: EtherExp
+version: '${project.version}'
+main: org.example1.etherexp.EtherExp
+api-version: '1.16'
+
+commands:
+  setBorderRadius:
+  setBorderAngle:
+  resetBorderAngle:
+  resetBorderRadius:
