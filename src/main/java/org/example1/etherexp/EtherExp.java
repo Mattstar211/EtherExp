@@ -1,17 +1,16 @@
 package org.example1.etherexp;
 
+import com.onarandombox.MultiversePortals.event.MVPortalEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerAdvancementDoneEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -143,7 +142,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(this, this);
         initCommand();
         new BukkitRunnable() {
             @Override
@@ -153,7 +152,11 @@ public final class EtherExp extends JavaPlugin implements Listener {
             }
         }.runTaskTimer(this, 0, 10);
     }
-
+    @EventHandler
+    public void onPlayerPortal(MVPortalEvent event) {
+        Player player = event.getTeleportee();
+        teleportToWorld(player);
+    }
     private void initCommand() {
         Objects.requireNonNull(getCommand("setBorderRadius")).setExecutor(this);
         Objects.requireNonNull(getCommand("setBorderAngle")).setExecutor(this);
@@ -252,22 +255,33 @@ public final class EtherExp extends JavaPlugin implements Listener {
             }
         }else player.sendMessage("Недостаточно прав!");
         if (split[0].equalsIgnoreCase("/penis") && !player.getWorld().getName().equals("world")) {
-            String nameWorld = "world";
-            World world = getWorld(nameWorld);
-            if (world != null){
-                final Location locationWorldBorder = world.getWorldBorder().getCenter();
-                final double x = locationWorldBorder.getX();
-                final double y = world.getHighestBlockYAt(locationWorldBorder);
-                final double z = locationWorldBorder.getZ();
-                final Location newLocation = new Location(world, x, y, z);
-                player.teleport(newLocation);
-                System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
-            }
+            teleportToWorld(player);
         }
         if (split[0].equalsIgnoreCase("/lobby") || split[0].equalsIgnoreCase("/hub")) teleportToLobby(event);
     }
 
+    private void teleportToWorld(Player player) {
+        String nameWorld = "world";
+        World world = getWorld(nameWorld);
+        if (world != null){
+            final Location newLocation = getLocationBorder(world);
+            player.teleport(newLocation);
+            System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
+        }
+    }
 
+    @NotNull
+    static Location getLocationBorder(World world) {
+        final Location locationWorldBorder = world.getWorldBorder().getCenter();
+        final double x = locationWorldBorder.getX();
+        final double y = world.getHighestBlockYAt(locationWorldBorder);
+        final double z = locationWorldBorder.getZ();
+        return new Location(world, x, y, z);
+    }
+
+    public void teleportPlayerToLocation(Player player, Location destinationLocation) {
+        player.teleport(destinationLocation);
+    }
     public World getWorld(String name) {
         // Получаем экземпляр MultiverseCore
         MultiverseCore multiverseCore = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
@@ -318,3 +332,4 @@ public final class EtherExp extends JavaPlugin implements Listener {
         angle += change_angle;
     }
 }
+

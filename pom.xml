@@ -77,5 +77,11 @@
           <version>4.2.2</version>
           <scope>provided</scope>
       </dependency>
+      <dependency>
+          <groupId>com.onarandombox.multiverseportals</groupId>
+          <artifactId>Multiverse-Portals</artifactId>
+          <version>4.2.0</version>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 </project>
