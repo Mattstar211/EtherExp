@@ -1,15 +1,17 @@
 package org.example1.etherexp;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.WorldBorder;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +23,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private double angle = 0;
     private double change_radius = 0.1;
     private double change_angle = 0.006;
+    private Location lobbyLocation;
     private static final List<String> stringList = Arrays.asList(
             "story/root",
             "story/mine_stone",
@@ -136,11 +139,9 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        lobbyLocation = new Location(getWorld("lobby"),9.606411547450097, 7.0, 26.573462861292374);
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
-        Objects.requireNonNull(getCommand("setBorderRadius")).setExecutor(this);
-        Objects.requireNonNull(getCommand("setBorderAngle")).setExecutor(this);
-        Objects.requireNonNull(getCommand("resetBorderAngle")).setExecutor(this);
-        Objects.requireNonNull(getCommand("resetBorderRadius")).setExecutor(this);
+        initCommand();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -148,6 +149,18 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
             }
         }.runTaskTimer(this, 0, 10);
+    }
+
+    private void initCommand() {
+        Objects.requireNonNull(getCommand("setBorderRadius")).setExecutor(this);
+        Objects.requireNonNull(getCommand("setBorderAngle")).setExecutor(this);
+        Objects.requireNonNull(getCommand("resetBorderAngle")).setExecutor(this);
+        Objects.requireNonNull(getCommand("resetBorderRadius")).setExecutor(this);
+        Objects.requireNonNull(getCommand("getworld")).setExecutor(this);
+        Objects.requireNonNull(getCommand("penis")).setExecutor(this);
+        Objects.requireNonNull(getCommand("lobby")).setExecutor(this);
+        Objects.requireNonNull(getCommand("hub")).setExecutor(this);
+        Objects.requireNonNull(getCommand("setlobby")).setExecutor(this);
     }
 
     @EventHandler
@@ -163,28 +176,40 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
     @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event){
+        if(event.getPlayer().getName().equals("Mattstar")) event.getPlayer().setGameMode(GameMode.CREATIVE);
+        teleportToLobby(event);
+    }
+    private void teleportToLobby(PlayerEvent event) {
+        Player player = event.getPlayer();
+        player.teleport(lobbyLocation);
+        player.sendMessage("Вы были телепортированы в лобби!");
+        System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в лобби");
+    }
+    @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String[] split = event.getMessage().split(" ");
-        if (event.getPlayer().isOp()) {
+        Player player = event.getPlayer();
+        if (player.isOp()) {
             if (split.length > 0 && split[0].equalsIgnoreCase("/setBorderRadius")) {
                 if (split.length > 1) {
                     try {
                         changeRadius(event, split);
                     } catch (NumberFormatException e) {
-                        event.getPlayer().sendMessage("Некорректное значение радиуса. Введите дробное число с точкой.");
+                        player.sendMessage("Некорректное значение радиуса. Введите дробное число с точкой.");
                     }
                 } else {
-                    event.getPlayer().sendMessage("Использование: /setBorderRadius <радиус>");
+                    player.sendMessage("Использование: /setBorderRadius <радиус>");
                 }
             } else if (split.length > 0 && split[0].equalsIgnoreCase("/setBorderAngle")) {
                 if (split.length > 1) {
                     try {
                         changeAngle(event, split);
                     } catch (NumberFormatException e) {
-                        event.getPlayer().sendMessage("Некорректное значение угла. Введите дробное число с точкой.");
+                        player.sendMessage("Некорректное значение угла. Введите дробное число с точкой.");
                     }
                 } else {
-                    event.getPlayer().sendMessage("Использование: /setBorderRadius <угол>");
+                    player.sendMessage("Использование: /setBorderRadius <угол>");
                 }
             } else if (split.length > 0 && split[0].equalsIgnoreCase("/resetBorderAngle")) {
                 change_angle = 0.006;
@@ -193,9 +218,53 @@ public final class EtherExp extends JavaPlugin implements Listener {
                 change_angle = 0.1;
                 System.out.println("Текущее значение угла: " + change_angle);
             }
-        }else{
-            event.getPlayer().sendMessage("Недостаточно прав!");
+            if (split[0].equalsIgnoreCase("/getworld"))
+                if (split.length > 1) {
+                    String nameWorld = split[1];
+                    World world = getWorld(nameWorld);
+                    if(world != null) event.getPlayer().sendMessage("Мир " + nameWorld + " успешно получен!");
+                    else event.getPlayer().sendMessage("Мир " + nameWorld + " не существует!");
+                }else event.getPlayer().sendMessage("Использование: /getworld <имя_мира>");
+            if (split.length > 0 && split[0].equalsIgnoreCase("/setlobby")) {
+                lobbyLocation = player.getLocation();
+                player.sendMessage("Точка успешно установлена!");
+                System.out.println("EtherExp: Текущие координаты спавна: X: " + lobbyLocation.getX() + " Y: " + lobbyLocation.getY() + " Z: " + lobbyLocation.getZ());
+            }else player.sendMessage("Использование: /setlobby");
+        }else player.sendMessage("Недостаточно прав!");
+        if (split[0].equalsIgnoreCase("/penis") && !player.getWorld().getName().equals("world")) {
+            String nameWorld = "world";
+            World world = getWorld(nameWorld);
+            if (world != null){
+                final Location locationWorldBorder = world.getWorldBorder().getCenter();
+                final double x = locationWorldBorder.getX();
+                final double y = world.getHighestBlockYAt(locationWorldBorder);
+                final double z = locationWorldBorder.getZ();
+                final Location newLocation = new Location(world, x, y, z);
+                player.teleport(newLocation);
+                System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
+            }
         }
+        if (split[0].equalsIgnoreCase("/lobby") || split[0].equalsIgnoreCase("/hub")) teleportToLobby(event);
+    }
+
+
+    public World getWorld(String name) {
+        // Получаем экземпляр MultiverseCore
+        MultiverseCore multiverseCore = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
+        // Проверяем, что MultiverseCore установлен
+        if (multiverseCore == null) {
+            // Обработка ошибки - MultiverseCore не установлен
+            return null;
+        }
+        // Получаем мир (lobby) по его имени
+        MultiverseWorld nameWorld = multiverseCore.getMVWorldManager().getMVWorld(name);
+        // Проверяем, что мир найден
+        if (nameWorld == null) {
+            // Обработка ошибки - мир не найден
+            return null;
+        }
+        // Возвращаем объект World
+        return nameWorld.getCBWorld();
     }
     private void expandWorldBorder(WorldBorder worldBorder, int newWorldBorderSize) {
         worldBorder.setSize(newWorldBorderSize, 15);

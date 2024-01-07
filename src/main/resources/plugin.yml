@@ -8,3 +8,8 @@ commands:
   setBorderAngle:
   resetBorderAngle:
   resetBorderRadius:
+  getWorld:
+  penis:
+  lobby:
+  hub:
+  setlobby:
