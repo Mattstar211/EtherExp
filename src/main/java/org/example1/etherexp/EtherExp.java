@@ -23,7 +23,11 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private double angle = 0;
     private double change_radius = 0.1;
     private double change_angle = 0.006;
-    private Location lobbyLocation;
+    private double xLobby = 9.606411547450097;
+    private double yLobby = 7.0;
+    private double zLobby = 26.573462861292374;
+    private float yawLobby = -180;
+    private float pitchLobby = 0;
     private static final List<String> stringList = Arrays.asList(
             "story/root",
             "story/mine_stone",
@@ -139,7 +143,6 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        lobbyLocation = new Location(getWorld("lobby"),9.606411547450097, 7.0, 26.573462861292374);
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
         initCommand();
         new BukkitRunnable() {
@@ -161,6 +164,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("lobby")).setExecutor(this);
         Objects.requireNonNull(getCommand("hub")).setExecutor(this);
         Objects.requireNonNull(getCommand("setlobby")).setExecutor(this);
+        Objects.requireNonNull(getCommand("resetlobby")).setExecutor(this);
     }
 
     @EventHandler
@@ -182,6 +186,8 @@ public final class EtherExp extends JavaPlugin implements Listener {
     }
     private void teleportToLobby(PlayerEvent event) {
         Player player = event.getPlayer();
+        World worldLobby = getWorld("lobby");
+        Location lobbyLocation = new Location(worldLobby, xLobby, yLobby, zLobby, yawLobby, pitchLobby);
         player.teleport(lobbyLocation);
         player.sendMessage("Вы были телепортированы в лобби!");
         System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в лобби");
@@ -218,18 +224,32 @@ public final class EtherExp extends JavaPlugin implements Listener {
                 change_angle = 0.1;
                 System.out.println("Текущее значение угла: " + change_angle);
             }
-            if (split[0].equalsIgnoreCase("/getworld"))
+            else if (split[0].equalsIgnoreCase("/getworld"))
                 if (split.length > 1) {
                     String nameWorld = split[1];
                     World world = getWorld(nameWorld);
                     if(world != null) event.getPlayer().sendMessage("Мир " + nameWorld + " успешно получен!");
                     else event.getPlayer().sendMessage("Мир " + nameWorld + " не существует!");
                 }else event.getPlayer().sendMessage("Использование: /getworld <имя_мира>");
-            if (split.length > 0 && split[0].equalsIgnoreCase("/setlobby")) {
-                lobbyLocation = player.getLocation();
+            else if (split[0].equalsIgnoreCase("/setlobby")) {
+                Location lobbyLocation = player.getLocation();
+                xLobby = lobbyLocation.getX();
+                yLobby = lobbyLocation.getY();
+                zLobby = lobbyLocation.getZ();
+                yawLobby = lobbyLocation.getYaw();
+                pitchLobby = lobbyLocation.getPitch();
                 player.sendMessage("Точка успешно установлена!");
-                System.out.println("EtherExp: Текущие координаты спавна: X: " + lobbyLocation.getX() + " Y: " + lobbyLocation.getY() + " Z: " + lobbyLocation.getZ());
-            }else player.sendMessage("Использование: /setlobby");
+                System.out.println("EtherExp: Текущие координаты спавна: X: " + lobbyLocation.getX() + " Y: " + lobbyLocation.getY() + " Z: " + lobbyLocation.getZ() + " Yaw: " + lobbyLocation.getYaw() + " Pitch: " + lobbyLocation.getPitch());
+            }
+            else if (split[0].equalsIgnoreCase("/resetlobby")) {
+                xLobby = 9.606411547450097;
+                yLobby = 7.0;
+                zLobby = 26.573462861292374;
+                yawLobby = -180;
+                pitchLobby = 0;
+                player.sendMessage("Точка успешно установлена!");
+                System.out.println("EtherExp: Текущие координаты спавна: X: " + xLobby + " Y: " + yLobby + " Z: " + zLobby + " Yaw: " + yawLobby + " Pitch: " + pitchLobby);
+            }
         }else player.sendMessage("Недостаточно прав!");
         if (split[0].equalsIgnoreCase("/penis") && !player.getWorld().getName().equals("world")) {
             String nameWorld = "world";
