@@ -14,3 +14,7 @@ commands:
   hub:
   setlobby:
   resetlobby:
+  addtobanlist:
+  removetobanlist:
+  addtoadminlist:
+  removetoadminlist:
