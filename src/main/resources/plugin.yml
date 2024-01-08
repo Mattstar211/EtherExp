@@ -18,3 +18,5 @@ commands:
   removetobanlist:
   addtoadminlist:
   removetoadminlist:
+  addOpAdmin:
+  setchangeangle:
