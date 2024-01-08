@@ -13,10 +13,7 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class EtherExp extends JavaPlugin implements Listener {
     private int worldBorderSize = 10;
@@ -208,7 +205,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
             assert world != null;
             WorldBorder worldBorder = world.getWorldBorder();
             if (stringList.contains(advancementName)) {
-                worldBorderSize = (int) worldBorder.getSize() + 10;
+                worldBorderSize = (int) (Math.ceil(worldBorder.getSize()/10)*10) + 10;
                 this.change_angle += change_angle_advancement;
                 expandWorldBorder(worldBorder, worldBorderSize);
                 for(Player player : world.getPlayers())
@@ -458,10 +455,13 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
     @NotNull
     static Location getLocationBorder(World world) {
+        Random random = new Random();
         final Location locationWorldBorder = world.getWorldBorder().getCenter();
-        final double x = locationWorldBorder.getX();
-        final double y = world.getHighestBlockYAt(locationWorldBorder);
-        final double z = locationWorldBorder.getZ();
+        int maxValue = (int)(world.getWorldBorder().getSize()/3);
+        int minValue = -maxValue;
+        final double x = locationWorldBorder.getX() + random.nextInt((maxValue - minValue) + 1) + minValue;
+        final double z = locationWorldBorder.getZ()+ random.nextInt((maxValue - minValue) + 1) + minValue;
+        final double y = world.getHighestBlockYAt((int)x, (int)z);
         return new Location(world, x, y, z);
     }
 
@@ -514,7 +514,6 @@ public final class EtherExp extends JavaPlugin implements Listener {
     private void setCenterBorder(){
         try{
             WorldBorder worldBorder = Bukkit.getWorlds().get(0).getWorldBorder();
-            long t = System.currentTimeMillis();
             double newWorldBorderX = radius * Math.cos(angle);
             double newWorldBorderY = radius * Math.sin(angle);
             worldBorder.setCenter(newWorldBorderX, newWorldBorderY);
@@ -529,8 +528,8 @@ public final class EtherExp extends JavaPlugin implements Listener {
         try{
             for (String name : nameAdmin) {
                 Player player = getPlayerByName(name);
-                assert player != null;
-                player.sendMessage(message);
+                if(player != null)
+                    player.sendMessage(message);
             }
         }catch (Exception e){
             System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: 536");
