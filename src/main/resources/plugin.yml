@@ -20,3 +20,8 @@ commands:
   removetoadminlist:
   addOpAdmin:
   setchangeangle:
+  stopborder:
+  restartborder:
+  banlist:
+  adminlist:
+  etherexp:
