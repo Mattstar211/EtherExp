@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Lobby implements CommandExecutor {
     EtherExp plugin;
-    Lobby(EtherExp plugin){this.plugin = plugin;}
+    public Lobby(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         try {

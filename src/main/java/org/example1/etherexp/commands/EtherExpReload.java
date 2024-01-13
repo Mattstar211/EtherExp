@@ -15,14 +15,14 @@ import java.util.Objects;
 public class EtherExpReload implements CommandExecutor {
     EtherExp plugin;
     SaveLoadExample config;
-    EtherExpReload(EtherExp plugin, SaveLoadExample config){
+    public EtherExpReload(EtherExp plugin, SaveLoadExample config){
         this.plugin = plugin;
         this.config = config;
     }
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         if (player.isOp()) {
-            if(args.length == 2 && Objects.equals(args[1], "reload")){
+            if(args.length == 1 && Objects.equals(args[0], "reload")){
                 try {
                     config.loadConfigurationFromFile("plugins/EtherExp", "config.yml", plugin);
                     WorldBorder worldBorder = plugin.getWorldCast("world").getWorldBorder();

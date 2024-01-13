@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Penis implements CommandExecutor {
     EtherExp plugin;
-    Penis(EtherExp plugin){this.plugin = plugin;}
+    public Penis(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         try {
             Player player = (Player) sender;

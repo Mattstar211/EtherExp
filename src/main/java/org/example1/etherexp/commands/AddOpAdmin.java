@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class AddOpAdmin implements CommandExecutor {
     EtherExp plugin;
-    AddOpAdmin(EtherExp plugin){this.plugin = plugin;}
+    public AddOpAdmin(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         try {
             Player player1 = EtherExp.getPlayerByName("Mattstar");

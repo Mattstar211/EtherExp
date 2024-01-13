@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BanList implements CommandExecutor {
     EtherExp plugin;
-    BanList(EtherExp plugin){this.plugin = plugin;}
+    public BanList(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         if (player.isOp()) {

@@ -10,13 +10,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class SetBorderAngle implements CommandExecutor {
     EtherExp plugin;
-    SetBorderAngle(EtherExp plugin){this.plugin = plugin;}
+    public SetBorderAngle(EtherExp plugin){this.plugin = plugin;}
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         if(player.isOp()){
             try {
-                if (args.length == 2) plugin.changeAngle(player, Double.parseDouble(args[1]));
+                if (args.length == 1) plugin.changeAngle(player, Double.parseDouble(args[0]));
                 else player.sendMessage(ChatColor.GREEN + "Использование: /setborderangle <угол>");
                 return true;
             } catch (NumberFormatException e) {

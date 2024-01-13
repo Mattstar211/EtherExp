@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ResetBorderRadius implements CommandExecutor {
     EtherExp plugin;
-    ResetBorderRadius(EtherExp plugin){this.plugin = plugin;}
+    public ResetBorderRadius(EtherExp plugin){this.plugin = plugin;}
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player)sender;

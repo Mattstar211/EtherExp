@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ResetLobby implements CommandExecutor {
     EtherExp plugin;
-    ResetLobby(EtherExp plugin){this.plugin = plugin;}
+    public ResetLobby(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         if(player.isOp()){

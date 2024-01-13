@@ -11,13 +11,13 @@ import org.jetbrains.annotations.NotNull;
 public class AddToBanList implements CommandExecutor {
 
     EtherExp plugin;
-    AddToBanList(EtherExp plugin){this.plugin = plugin;}
+    public AddToBanList(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         if(player.isOp()){
-            if (args.length == 2) {
+            if (args.length == 1) {
                 try {
-                    String namePlayer = args[1];
+                    String namePlayer = args[0];
                     plugin.getNameBan().add(namePlayer);
                     return true;
                 } catch (Exception e) {

@@ -10,13 +10,13 @@ import org.example1.etherexp.EtherExp;
 
 public class SetBorderRadius implements CommandExecutor {
     EtherExp plugin;
-    SetBorderRadius(EtherExp plugin){this.plugin = plugin;}
+    public SetBorderRadius(EtherExp plugin){this.plugin = plugin;}
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
         if(player.isOp()){
             try {
-                if (args.length == 2) plugin.changeRadius(player, Double.parseDouble(args[1]));
+                if (args.length == 1) plugin.changeRadius(player, Double.parseDouble(args[0]));
                 else player.sendMessage(ChatColor.GREEN + "Использование: /setborderradius <радиус>");
                 return true;
             } catch (NumberFormatException e) {

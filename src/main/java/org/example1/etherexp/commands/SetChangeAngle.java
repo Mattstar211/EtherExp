@@ -10,13 +10,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class SetChangeAngle implements CommandExecutor {
     EtherExp plugin;
-    SetChangeAngle(EtherExp plugin){this.plugin = plugin;}
+    public SetChangeAngle(EtherExp plugin){this.plugin = plugin;}
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         Player player = (Player) sender;
         if (player.isOp()) {
-            if (args.length == 2) {
+            if (args.length == 1) {
                 try {
-                    double new_change_angle = Double.parseDouble(args[1]);
+                    double new_change_angle = Double.parseDouble(args[0]);
                     plugin.setChangeAngleAdvancement(new_change_angle);
                     player.sendMessage("Приращение угла изменено на " + new_change_angle);
                     return true;
