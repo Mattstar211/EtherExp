@@ -155,9 +155,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
     public double getChangeAngleAdvancement() {
         return this.change_angle_advancement;
     }
-    public void setChangeAngleAdvancement(double changeAngleAdvancement) {
-        this.change_angle_advancement = changeAngleAdvancement;
-    }
+    public void setChangeAngleAdvancement(double changeAngleAdvancement) {this.change_angle_advancement = changeAngleAdvancement;}
     public double getXLobby() {
         return xLobby;
     }
@@ -167,37 +165,30 @@ public final class EtherExp extends JavaPlugin implements Listener {
     public double getYLobby() {
         return yLobby;
     }
-
     public void setYLobby(double yLobby) {
         this.yLobby = yLobby;
     }
     public double getZLobby() {
         return zLobby;
     }
-
     public void setZLobby(double zLobby) {
         this.zLobby = zLobby;
     }
     public float getYawLobby() {
         return yawLobby;
     }
-
     public void setYawLobby(float yawLobby) {
         this.yawLobby = yawLobby;
     }
-
     public float getPitchLobby() {
         return pitchLobby;
     }
-
     public void setPitchLobby(float pitchLobby) {
         this.pitchLobby = pitchLobby;
     }
-
     public List<String> getNameBan() {
         return nameBan;
     }
-
     public void setNameBan(List<String> nameBan){
         this.nameBan = nameBan;
     }
@@ -208,21 +199,16 @@ public final class EtherExp extends JavaPlugin implements Listener {
     public int getWorldBorderSize() {
         return worldBorderSize;
     }
-
     public void setWorldBorderSize(int worldBorderSize) {
         this.worldBorderSize = worldBorderSize;
     }
-
     public double getRadius() {
         return radius;
     }
-
     public void setRadius(double radius) {this.radius = radius;}
-
     public double getAngle() {
         return angle;
     }
-
     public void setAngle(double angle) {
         this.angle = angle;
     }
@@ -244,7 +230,6 @@ public final class EtherExp extends JavaPlugin implements Listener {
     public double getTemp_change_radius(){return temp_change_radius;}
     public void setTemp_change_angle(double temp_change_angle){this.temp_change_angle = temp_change_angle;}
     public double getTemp_change_angle(){return temp_change_angle;}
-
     @Override
     public void onEnable() {
         config = new SaveLoadExample();
@@ -283,9 +268,9 @@ public final class EtherExp extends JavaPlugin implements Listener {
 
     private void initCommand() {
         String[] commands = {
-                "setBorderRadius", "setBorderAngle", "resetBorderAngle", "resetBorderRadius", "getworld",
+                "setborderradius", "setborderangle", "resetborderangle", "resetborderradius", "getworld",
                 "penis", "lobby", "hub", "setlobby", "resetlobby", "addtobanlist", "removetobanlist",
-                "addtoadminlist", "removetoadminlist", "addOpAdmin", "setchangeangle", "stopborder", "restartborder",
+                "addtoadminlist", "removetoadminlist", "addopadmin", "setchangeangle", "stopborder", "restartborder",
                 "banlist", "adminlist", "etherexp"
         };
         try {
@@ -297,7 +282,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    private static void sendErrorMessage(Exception e, int string) {
+    public static void sendErrorMessage(Exception e, int string) {
         System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: " + string);
     }
 
@@ -348,7 +333,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    private void teleportToLobby(Player player) {
+    public void teleportToLobby(Player player) {
         try {
             World worldLobby = getWorldCast("lobby");
             Location lobbyLocation = new Location(worldLobby, xLobby, yLobby, zLobby, yawLobby, pitchLobby);
@@ -623,7 +608,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    private void teleportToWorld(Player player) {
+    public void teleportToWorld(Player player) {
         try {
             String nameWorld = "world";
             World world = getWorldCast(nameWorld);
@@ -667,7 +652,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         worldBorder.setSize(newWorldBorderSize, 15);
     }
 
-    private void changeAngle(Player player, double new_change_angle) {
+    public void changeAngle(Player player, double new_change_angle) {
         try {
             player.sendMessage("Установлено значение угла: " + new_change_angle);
             change_angle = new_change_angle;
@@ -677,7 +662,7 @@ public final class EtherExp extends JavaPlugin implements Listener {
         }
     }
 
-    private void changeRadius(Player player, double new_change_radius) {
+    public void changeRadius(Player player, double new_change_radius) {
         try {
             player.sendMessage("Установлен радиус барьера: " + new_change_radius);
             change_radius = new_change_radius;
