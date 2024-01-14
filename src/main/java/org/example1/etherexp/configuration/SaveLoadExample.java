@@ -3,10 +3,8 @@ package org.example1.etherexp.configuration;
 import org.example1.etherexp.EtherExp;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class SaveLoadExample implements Serializable {
     public void saveConfigurationToFile(String folderPath, String fileName, EtherExp configuration) {
@@ -27,7 +25,7 @@ public class SaveLoadExample implements Serializable {
             writer.newLine();
             writer.write("#change_angle=" + configuration.getChange_angle());
             writer.newLine();
-            writer.write("#change_angle_advancement=" + configuration.getChangeAngleAdvancement());
+            writer.write("#change_angle_advancement=" + configuration.getChange_angle_percent());
             writer.newLine();
             writer.write("#xLobby=" + configuration.getXLobby());
             writer.newLine();
@@ -97,7 +95,7 @@ public class SaveLoadExample implements Serializable {
                             configuration.setChange_angle(Double.parseDouble(variableValue));
                             break;
                         case "#change_angle_advancement":
-                            configuration.setChangeAngleAdvancement(Double.parseDouble(variableValue));
+                            configuration.setChange_angle_percent(Double.parseDouble(variableValue));
                             break;
                         case "#xLobby":
                             configuration.setXLobby(Double.parseDouble(variableValue));

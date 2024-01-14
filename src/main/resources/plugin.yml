@@ -19,7 +19,7 @@ commands:
   addtoadminlist:
   removetoadminlist:
   addOpAdmin:
-  setchangeangle:
+  setpercentangle:
   stopborder:
   restartborder:
   banlist:
