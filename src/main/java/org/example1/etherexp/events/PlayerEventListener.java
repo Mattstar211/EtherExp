@@ -137,15 +137,15 @@ public class PlayerEventListener implements Listener {
             World world = plugin.getWorldCast("world");
             assert world != null;
             WorldBorder worldBorder = world.getWorldBorder();
-            if (advancementsList.contains(advancementName)) {
+            if (advancementsList.contains(advancementName) && event.getPlayer().getWorld().getName().equals("world")) {
                 plugin.setWorldBorderSize((int) (Math.ceil(worldBorder.getSize() / 10) * 10) + 10);
                 double newChangeAngle = plugin.getChange_angle() * plugin.getChange_angle_percent() / 100 + plugin.getChange_angle();
-                System.out.println("EtherExp: newChangeAngle: " + newChangeAngle);
+                System.out.println(ChatColor.GREEN + "EtherExp: newChangeAngle: " + newChangeAngle);
                 plugin.setChange_angle(newChangeAngle);
                 expandWorldBorder(worldBorder, plugin.getWorldBorderSize());
                 for (Player player : world.getPlayers())
                     player.sendMessage(ChatColor.YELLOW + "Пространство расширяется. " + "Текущее значение барьера: " + plugin.getWorldBorderSize());
-                System.out.println("Текущее значение барьера: " + plugin.getWorldBorderSize());
+                System.out.println(ChatColor.GREEN + "Текущее значение барьера: " + plugin.getWorldBorderSize());
             }
         } catch (Exception e) {
             EtherExp.sendErrorMessage(e, 211);
@@ -161,7 +161,7 @@ public class PlayerEventListener implements Listener {
         try {
             killBanPlayer(player);
             if(nameWorld.equals("lobby") && x > 7 && x < 12 && y >= 6 && y <= 9 && z > -1 && z < 0){
-                System.out.println("Игрок " + player.getName() + " зашел в портал");
+                System.out.println(ChatColor.GREEN + "Игрок " + player.getName() + " зашел в портал");
                 plugin.sendMessageAdmin("Игрок " + player.getName() + " зашел в портал");
                 plugin.teleportToWorld(player);
             }

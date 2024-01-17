@@ -16,7 +16,7 @@ public class SetPercentAngle implements CommandExecutor {
         if (player.isOp()) {
             if (args.length == 1) {
                 try {
-                    double new_change_angle = Double.parseDouble(args[0]);
+                    int new_change_angle = Integer.parseInt(args[0]);
                     plugin.setChange_angle_percent(new_change_angle);
                     player.sendMessage("Приращение угла изменено на " + new_change_angle);
                     return true;

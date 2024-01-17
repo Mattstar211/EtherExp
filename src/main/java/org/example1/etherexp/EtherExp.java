@@ -22,7 +22,7 @@ public final class EtherExp extends JavaPlugin {
     private double temp_change_radius = 0.0;
     private double change_angle = 0.0017;
     private double temp_change_angle = 0.0;
-    private double change_angle_percent = 5;
+    private int change_angle_percent = 1;
     private double xLobby = 9.606411547450097;
     private double yLobby = 7.0;
     private double zLobby = 26.573462861292374;
@@ -30,11 +30,17 @@ public final class EtherExp extends JavaPlugin {
     private float pitchLobby = 0;
     private double xBorder = 0;
     private double yBorder = 0;
+    private int percentNarrWorld = 15;
+    private int periodNarrWorld = 1;//Минуты
     private List<String> nameBan = new ArrayList<>();
     private List<String> nameAdmin = new ArrayList<>();
     private SaveLoadExample config;
-    public double getChange_angle_percent() {return this.change_angle_percent;}
-    public void setChange_angle_percent(double changeAngleAdvancement) {this.change_angle_percent = changeAngleAdvancement;}
+    public int getPeriodNarrWorld(){return  this.periodNarrWorld;}
+    public void setPeriodNarrWorld(int periodNarrWorld){this.periodNarrWorld = periodNarrWorld;}
+    public int getPercentNarrWorld(){return  this.percentNarrWorld;}
+    public void setPercentNarrWorld(int periodNarrWorld){this.percentNarrWorld = periodNarrWorld;}
+    public int getChange_angle_percent() {return this.change_angle_percent;}
+    public void setChange_angle_percent(int changeAngleAdvancement) {this.change_angle_percent = changeAngleAdvancement;}
     public double getXLobby() {return xLobby;}
     public void setXLobby(double xLobby) {this.xLobby = xLobby;}
     public double getYLobby() {return yLobby;}
@@ -88,7 +94,29 @@ public final class EtherExp extends JavaPlugin {
                 setCenterBorder();
             }
         }.runTaskTimer(this, 0, 10);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                setSizeBorder();
+            }
+        }.runTaskTimer(this, 0, periodNarrWorld* 1200L);
         System.out.println(ChatColor.GREEN + this.getDescription().getFullName() + " enabled!");
+    }
+    private void setSizeBorder(){
+        try {
+            World world = getWorldCast("world");
+            WorldBorder worldBorder = world.getWorldBorder();
+            System.out.println(ChatColor.GREEN + "EtherExp: worldBorder: " + worldBorder.getSize());
+            if(worldBorder.getSize() <= 25) return;
+            int newWorldBorderSize = (int) (worldBorder.getSize() - (worldBorder.getSize() * percentNarrWorld)/100);
+            System.out.println(ChatColor.GREEN + "EtherExp: Значение барьера уменьшилось: " + worldBorder.getSize() + " -> " + newWorldBorderSize);
+            worldBorder.setSize(newWorldBorderSize, 15);
+            worldBorderSize = newWorldBorderSize;
+            for (Player player : world.getPlayers())
+                player.sendMessage(ChatColor.YELLOW + "Пространство сужается. " + "Текущее значение барьера: " + newWorldBorderSize);
+        } catch (Exception e) {
+            sendErrorMessage(e, 115);
+        }
     }
     private void initCommand() {
         try {
@@ -113,6 +141,8 @@ public final class EtherExp extends JavaPlugin {
             this.registerCommand(this.getCommand("banlist"), new BanList(this));
             this.registerCommand(this.getCommand("adminlist"), new AdminList(this));
             this.registerCommand(this.getCommand("etherexp"), new EtherExpReload(this, this.config));
+            this.registerCommand(this.getCommand("setperiodnarrworld"), new SetPeriodNarrWorld(this));
+            //this.registerCommand(this.getCommand("setpercentnarrworld"), new EtherExpReload(this, this.config));
         } catch (Exception e) {
             sendErrorMessage(e, 187);
         }
@@ -123,7 +153,7 @@ public final class EtherExp extends JavaPlugin {
         }
     }
     public static void sendErrorMessage(Exception e, int string) {
-        System.out.println("EtherExp: Ошибка " + e.getMessage() + " Строка: " + string);
+        System.out.println(ChatColor.RED + "EtherExp: Ошибка " + e.getMessage() + " Строка: " + string);
     }
     public void teleportToLobby(Player player) {
         try {
@@ -131,7 +161,7 @@ public final class EtherExp extends JavaPlugin {
             Location lobbyLocation = new Location(worldLobby, xLobby, yLobby, zLobby, yawLobby, pitchLobby);
             player.teleport(lobbyLocation);
             player.sendMessage(ChatColor.AQUA + "Вы были телепортированы в лобби!");
-            System.out.println("Игрок " + player.getName() + " телепортирован в лобби");
+            System.out.println(ChatColor.GREEN + "Игрок " + player.getName() + " телепортирован в лобби");
         } catch (Exception e) {
             sendErrorMessage(e, 251);
         }
@@ -144,7 +174,7 @@ public final class EtherExp extends JavaPlugin {
             if (world != null) {
                 final Location newLocation = getLocationBorder(world);
                 player.teleport(newLocation);
-                System.out.println("EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
+                System.out.println(ChatColor.GREEN + "EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
             }
         } catch (Exception e) {
             sendErrorMessage(e, 438);
@@ -177,7 +207,7 @@ public final class EtherExp extends JavaPlugin {
         try {
             player.sendMessage("Установлено значение угла: " + new_change_angle);
             change_angle = new_change_angle;
-            System.out.println("Текущее значение угла: " + change_angle);
+            System.out.println(ChatColor.GREEN + "Текущее значение угла: " + change_angle);
         } catch (Exception e) {
             sendErrorMessage(e, 490);
         }
@@ -186,7 +216,7 @@ public final class EtherExp extends JavaPlugin {
         try {
             player.sendMessage("Установлен радиус барьера: " + new_change_radius);
             change_radius = new_change_radius;
-            System.out.println("Текущее значение радиуса: " + change_radius);
+            System.out.println(ChatColor.GREEN + "Текущее значение радиуса: " + change_radius);
         } catch (Exception e) {
             sendErrorMessage(e, 499);
         }
@@ -200,7 +230,7 @@ public final class EtherExp extends JavaPlugin {
     }
     private void setCenterBorder() {
         try {
-            WorldBorder worldBorder = Bukkit.getWorlds().get(0).getWorldBorder();
+            WorldBorder worldBorder = getWorldCast("world").getWorldBorder();
             double newWorldBorderX = radius * Math.cos(angle);
             double newWorldBorderY = radius * Math.sin(angle);
             worldBorder.setCenter(newWorldBorderX, newWorldBorderY);

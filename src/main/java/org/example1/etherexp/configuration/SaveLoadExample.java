@@ -25,7 +25,7 @@ public class SaveLoadExample implements Serializable {
             writer.newLine();
             writer.write("#change_angle=" + configuration.getChange_angle());
             writer.newLine();
-            writer.write("#change_angle_advancement=" + configuration.getChange_angle_percent());
+            writer.write("#change_angle_percent=" + configuration.getChange_angle_percent());
             writer.newLine();
             writer.write("#xLobby=" + configuration.getXLobby());
             writer.newLine();
@@ -36,6 +36,10 @@ public class SaveLoadExample implements Serializable {
             writer.write("#yawLobby=" + configuration.getYawLobby());
             writer.newLine();
             writer.write("#pitchLobby=" + configuration.getPitchLobby());
+            writer.newLine();
+            writer.write("#percentNarrWorld=" + configuration.getPercentNarrWorld());
+            writer.newLine();
+            writer.write("#periodNarrWorld=" + configuration.getPeriodNarrWorld());
             writer.newLine();
             writer.write("#xBorder=" + configuration.getXborder());
             writer.newLine();
@@ -66,6 +70,7 @@ public class SaveLoadExample implements Serializable {
         // Проверяем, существует ли файл, и если нет, выходим
         if (!configFile.exists()) {
             System.out.println("Конфигурационный файл не найден.");
+            saveConfigurationToFile(folderPath, fileName, configuration);
             return;
         }
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
@@ -94,8 +99,8 @@ public class SaveLoadExample implements Serializable {
                         case "#change_angle":
                             configuration.setChange_angle(Double.parseDouble(variableValue));
                             break;
-                        case "#change_angle_advancement":
-                            configuration.setChange_angle_percent(Double.parseDouble(variableValue));
+                        case "#change_angle_percent":
+                            configuration.setChange_angle_percent(Integer.parseInt(variableValue));
                             break;
                         case "#xLobby":
                             configuration.setXLobby(Double.parseDouble(variableValue));
@@ -131,6 +136,12 @@ public class SaveLoadExample implements Serializable {
                             break;
                         case "#temp_change_radius":
                             configuration.setTemp_change_radius(Double.parseDouble(variableValue));
+                            break;
+                        case "#percentNarrWorld":
+                            configuration.setPercentNarrWorld(Integer.parseInt(variableValue));
+                            break;
+                        case "#periodNarrWorld":
+                            configuration.setPeriodNarrWorld(Integer.parseInt(variableValue));
                             break;
                     }
                 }
