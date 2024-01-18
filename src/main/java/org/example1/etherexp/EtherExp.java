@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public final class EtherExp extends JavaPlugin {
+    private boolean manuallyDisabled = false;
     private int worldBorderSize = 10;
     private double radius = 10;
     private double angle = 0;
@@ -29,12 +30,14 @@ public final class EtherExp extends JavaPlugin {
     private float yawLobby = -180;
     private float pitchLobby = 0;
     private double xBorder = 0;
-    private double yBorder = 0;
+    private double zBorder = 0;
     private int percentNarrWorld = 15;
     private int periodNarrWorld = 1;//Минуты
     private List<String> nameBan = new ArrayList<>();
     private List<String> nameAdmin = new ArrayList<>();
     private SaveLoadExample config;
+    public boolean getManuallyDisabled(){return this.manuallyDisabled;}
+    public void setManuallyDisabled(boolean manuallyDisabled){ this.manuallyDisabled = manuallyDisabled;}
     public int getPeriodNarrWorld(){return  this.periodNarrWorld;}
     public void setPeriodNarrWorld(int periodNarrWorld){this.periodNarrWorld = periodNarrWorld;}
     public int getPercentNarrWorld(){return  this.percentNarrWorld;}
@@ -67,8 +70,8 @@ public final class EtherExp extends JavaPlugin {
     public void setChange_angle(double change_angle){this.change_angle = change_angle;}
     public void setXborder(double xBorder){this.xBorder = xBorder;}
     public double getXborder(){return this.xBorder;}
-    public void setYborder(double yBorder){this.yBorder = yBorder;}
-    public double getYborder(){return this.yBorder;}
+    public void setZborder(double yBorder){this.zBorder = yBorder;}
+    public double getZborder(){return this.zBorder;}
     public void setTemp_change_radius(double temp_change_radius){this.temp_change_radius = temp_change_radius;}
     public double getTemp_change_radius(){return temp_change_radius;}
     public void setTemp_change_angle(double temp_change_angle){this.temp_change_angle = temp_change_angle;}
@@ -77,12 +80,12 @@ public final class EtherExp extends JavaPlugin {
     public void onEnable() {
         config = new SaveLoadExample();
         try {
-            nameAdmin.add("PavelDurov");
-            nameAdmin.add("Mattstar");
-            nameAdmin.add("Reqwenx");
+            System.out.println("EtherExp: worldBorderSize1: " + worldBorderSize);
             config.loadConfigurationFromFile("plugins/EtherExp", "config.yml", this);
+            System.out.println("EtherExp: worldBorderSize2: " + worldBorderSize);
             WorldBorder worldBorder = getWorldCast("world").getWorldBorder();
-            worldBorder.setCenter(xBorder, yBorder);
+            worldBorder.setCenter(xBorder, zBorder);
+            worldBorder.setSize(worldBorderSize, 15);
         } catch (Exception e) {
             sendErrorMessage(e, 163);
         }
@@ -99,14 +102,27 @@ public final class EtherExp extends JavaPlugin {
             public void run() {
                 setSizeBorder();
             }
-        }.runTaskTimer(this, 0, periodNarrWorld* 1200L);
+        }.runTaskTimer(this, 600, periodNarrWorld* 1200L);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                config.saveConfigurationToFile("plugins/EtherExp", "config.yml", EtherExp.this);
+            }
+        }.runTaskTimer(this, 600, 12000L);
         System.out.println(ChatColor.GREEN + this.getDescription().getFullName() + " enabled!");
+    }
+    public void updatePlugin(){
+        World world = Bukkit.getWorld("world");
+        WorldBorder worldBorder = world.getWorldBorder();
+        worldBorderSize = (int) worldBorder.getSize();
+        Location locationBorder = worldBorder.getCenter();
+        xBorder = locationBorder.getX();
+        zBorder = locationBorder.getZ();
     }
     private void setSizeBorder(){
         try {
             World world = getWorldCast("world");
             WorldBorder worldBorder = world.getWorldBorder();
-            System.out.println(ChatColor.GREEN + "EtherExp: worldBorder: " + worldBorder.getSize());
             if(worldBorder.getSize() <= 25) return;
             int newWorldBorderSize = (int) (worldBorder.getSize() - (worldBorder.getSize() * percentNarrWorld)/100);
             System.out.println(ChatColor.GREEN + "EtherExp: Значение барьера уменьшилось: " + worldBorder.getSize() + " -> " + newWorldBorderSize);
@@ -225,8 +241,9 @@ public final class EtherExp extends JavaPlugin {
     public void onDisable() {
         WorldBorder border =  Objects.requireNonNull(Bukkit.getWorld("world")).getWorldBorder();
         xBorder = border.getCenter().getX();
-        yBorder = border.getCenter().getY();
-        config.saveConfigurationToFile("plugins/EtherExp", "config.yml", this);
+        zBorder = border.getCenter().getY();
+        worldBorderSize = (int) border.getSize();
+        if(!manuallyDisabled) config.saveConfigurationToFile("plugins/EtherExp", "config.yml", this);
     }
     private void setCenterBorder() {
         try {

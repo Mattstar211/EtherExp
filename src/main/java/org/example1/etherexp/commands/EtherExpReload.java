@@ -28,9 +28,11 @@ public class EtherExpReload implements CommandExecutor {
                 try {
                     Plugin plg = Bukkit.getPluginManager().getPlugin("EtherExp");
                     if (plg!=null){
+                        plugin.setManuallyDisabled(true);
+                        SaveLoadExample.updateConfigFile("plugins/EtherExp/config.yml", "xBorder", Double.toString(plugin.getXborder()));
+                        SaveLoadExample.updateConfigFile("plugins/EtherExp/config.yml", "zBorder", Double.toString(plugin.getZborder()));
                         Bukkit.getPluginManager().disablePlugin(plg);
                         Bukkit.getPluginManager().enablePlugin(plg);
-                        player.sendMessage(ChatColor.GREEN + "Конфиг успешно загружен!");
                         return true;
                     }else{
                         player.sendMessage(ChatColor.RED + "Произошла ошибка при перезагрузке плагина!");

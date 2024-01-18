@@ -1,153 +1,186 @@
 package org.example1.etherexp.configuration;
 
+import org.bukkit.ChatColor;
 import org.example1.etherexp.EtherExp;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SaveLoadExample implements Serializable {
     public void saveConfigurationToFile(String folderPath, String fileName, EtherExp configuration) {
         File folder = new File(folderPath);
         if (!folder.exists()) {
-            folder.mkdirs(); // Создаем все несуществующие директории
+            folder.mkdirs();
         }
         File configFile = new File(folder, fileName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(configFile))) {
-            // Записываем значения переменных в файл
-            writer.write("#worldBorderSize=" + configuration.getWorldBorderSize());
+            writer.write("plugin-Version: " + configuration.getDescription().getVersion());
             writer.newLine();
-            writer.write("#radius=" + configuration.getRadius());
+            writer.write("worldBorderSize: " + configuration.getWorldBorderSize());
             writer.newLine();
-            writer.write("#angle=" + configuration.getAngle());
+            writer.write("radius: " + configuration.getRadius());
             writer.newLine();
-            writer.write("#change_radius=" + configuration.getChange_radius());
+            writer.write("angle: " + configuration.getAngle());
             writer.newLine();
-            writer.write("#change_angle=" + configuration.getChange_angle());
+            writer.write("change_radius: " + configuration.getChange_radius());
             writer.newLine();
-            writer.write("#change_angle_percent=" + configuration.getChange_angle_percent());
+            writer.write("change_angle: " + configuration.getChange_angle());
             writer.newLine();
-            writer.write("#xLobby=" + configuration.getXLobby());
+            writer.write("change_angle_percent: " + configuration.getChange_angle_percent());
             writer.newLine();
-            writer.write("#yLobby=" + configuration.getYLobby());
+            writer.write("xLobby: " + configuration.getXLobby());
             writer.newLine();
-            writer.write("#zLobby=" + configuration.getZLobby());
+            writer.write("yLobby: " + configuration.getYLobby());
             writer.newLine();
-            writer.write("#yawLobby=" + configuration.getYawLobby());
+            writer.write("zLobby: " + configuration.getZLobby());
             writer.newLine();
-            writer.write("#pitchLobby=" + configuration.getPitchLobby());
+            writer.write("yawLobby: " + configuration.getYawLobby());
             writer.newLine();
-            writer.write("#percentNarrWorld=" + configuration.getPercentNarrWorld());
+            writer.write("pitchLobby: " + configuration.getPitchLobby());
             writer.newLine();
-            writer.write("#periodNarrWorld=" + configuration.getPeriodNarrWorld());
+            writer.write("percentNarrWorld: " + configuration.getPercentNarrWorld());
             writer.newLine();
-            writer.write("#xBorder=" + configuration.getXborder());
+            writer.write("periodNarrWorld: " + configuration.getPeriodNarrWorld());
             writer.newLine();
-            writer.write("#yBorder=" + configuration.getYborder());
+            writer.write("xBorder: " + configuration.getXborder());
             writer.newLine();
-            writer.write("#temp_change_angle=" + configuration.getTemp_change_angle());
+            writer.write("zBorder: " + configuration.getZborder());
             writer.newLine();
-            writer.write("#temp_change_radius=" + configuration.getTemp_change_radius());
+            writer.write("temp_change_angle: " + configuration.getTemp_change_angle());
             writer.newLine();
-            writer.write("#nameBan=");
+            writer.write("temp_change_radius: " + configuration.getTemp_change_radius());
+            writer.newLine();
+            writer.write("nameBan: ");
             for (String name : configuration.getNameBan()) {
                 writer.write(name + ",");
             }
             writer.newLine();
-            writer.write("#nameAdmin=");
+            writer.write("nameAdmin: ");
             for (String name : configuration.getNameAdmin()) {
                 writer.write(name + ",");
             }
             writer.newLine();
-            System.out.println("Конфигурационный файл сохранен по пути: " + configFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(ChatColor.GREEN + "Конфигурационный файл сохранен по пути: " + configFile.getAbsolutePath());
+        } catch (Exception e) {
+            EtherExp.sendErrorMessage(e, 66);
         }
     }
-    public void loadConfigurationFromFile(String folderPath,String fileName, EtherExp configuration) {
+    public void loadConfigurationFromFile(String folderPath, String fileName, EtherExp configuration) {
         File configFile = new File(folderPath, fileName);
-
-        // Проверяем, существует ли файл, и если нет, выходим
         if (!configFile.exists()) {
-            System.out.println("Конфигурационный файл не найден.");
+            System.out.println(ChatColor.YELLOW + "Конфигурационный файл не найден.");
+            configuration.updatePlugin();
             saveConfigurationToFile(folderPath, fileName, configuration);
             return;
         }
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // Разбиваем строку на имя переменной и её значение
-                String[] parts = line.split("=");
+                String[] parts = line.split(": ");
                 if (parts.length == 2) {
                     String variableName = parts[0].trim();
                     String variableValue = parts[1].trim();
-
-                    // Устанавливаем значения переменных в соответствии с прочитанными данными
                     switch (variableName) {
-                        case "#worldBorderSize":
+                        case "worldBorderSize":
                             configuration.setWorldBorderSize(Integer.parseInt(variableValue));
                             break;
-                        case "#radius":
+                        case "radius":
                             configuration.setRadius(Double.parseDouble(variableValue));
                             break;
-                        case "#angle":
+                        case "angle":
                             configuration.setAngle(Double.parseDouble(variableValue));
                             break;
-                        case "#change_radius":
+                        case "change_radius":
                             configuration.setChange_radius(Double.parseDouble(variableValue));
                             break;
-                        case "#change_angle":
+                        case "change_angle":
                             configuration.setChange_angle(Double.parseDouble(variableValue));
                             break;
-                        case "#change_angle_percent":
+                        case "change_angle_percent":
                             configuration.setChange_angle_percent(Integer.parseInt(variableValue));
                             break;
-                        case "#xLobby":
+                        case "xLobby":
                             configuration.setXLobby(Double.parseDouble(variableValue));
                             break;
-                        case "#yLobby":
+                        case "yLobby":
                             configuration.setYLobby(Double.parseDouble(variableValue));
                             break;
-                        case "#zLobby":
+                        case "zLobby":
                             configuration.setZLobby(Double.parseDouble(variableValue));
                             break;
-                        case "#yawLobby":
+                        case "yawLobby":
                             configuration.setYawLobby(Float.parseFloat(variableValue));
                             break;
-                        case "#pitchLobby":
+                        case "pitchLobby":
                             configuration.setPitchLobby(Float.parseFloat(variableValue));
                             break;
-                        case "#xBorder":
+                        case "xBorder":
                             configuration.setXborder(Double.parseDouble(variableValue));
                             break;
-                        case "#yBorder":
-                            configuration.setYborder(Double.parseDouble(variableValue));
+                        case "zBorder":
+                            configuration.setZborder(Double.parseDouble(variableValue));
                             break;
-                        case "#nameBan":
+                        case "nameBan":
                             String[] namesBan = variableValue.split(",");
                             configuration.setNameBan(new ArrayList<>(Arrays.asList(namesBan)));
                             break;
-                        case "#nameAdmin":
+                        case "nameAdmin":
                             String[] namesAdmin = variableValue.split(",");
                             configuration.setNameAdmin(new ArrayList<>(Arrays.asList(namesAdmin)));
                             break;
-                        case "#temp_change_angle":
+                        case "temp_change_angle":
                             configuration.setTemp_change_angle(Double.parseDouble(variableValue));
                             break;
-                        case "#temp_change_radius":
+                        case "temp_change_radius":
                             configuration.setTemp_change_radius(Double.parseDouble(variableValue));
                             break;
-                        case "#percentNarrWorld":
+                        case "percentNarrWorld":
                             configuration.setPercentNarrWorld(Integer.parseInt(variableValue));
                             break;
-                        case "#periodNarrWorld":
+                        case "periodNarrWorld":
                             configuration.setPeriodNarrWorld(Integer.parseInt(variableValue));
                             break;
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(ChatColor.GREEN + "Конфигурационный файл загружен!");
+        } catch (Exception e) {
+            EtherExp.sendErrorMessage(e, 149);
+            System.out.println(ChatColor.RED + "Конфигурационный файл не загружен!");
+        }
+    }
+    public static void updateConfigFile(String filePath, String fieldName, String newValue) {
+        try {
+            File file = new File(filePath);
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Map<String, String> properties = new HashMap<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(": ");
+                if (parts.length == 2) {
+                    properties.put(parts[0], parts[1]);
+                }
+            }
+            reader.close();
+            if (properties.containsKey(fieldName)) {
+                properties.put(fieldName, newValue);
+            } else {
+                System.out.println("Поле " + fieldName + " не найдено в файле.");
+                return;
+            }
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                writer.write(entry.getKey() + ": " + entry.getValue());
+                writer.newLine();
+            }
+            writer.close();
+
+            System.out.println("Значение поля " + fieldName + " успешно обновлено.");
+        } catch (Exception e) {
+            EtherExp.sendErrorMessage(e, 189);
         }
     }
 }
