@@ -23,7 +23,7 @@ public class StopBorder implements CommandExecutor {
                     pl.sendMessage(ChatColor.YELLOW + "Пространство остановилось!");
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 26);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{

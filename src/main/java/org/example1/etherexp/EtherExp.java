@@ -87,7 +87,7 @@ public final class EtherExp extends JavaPlugin {
             worldBorder.setCenter(xBorder, zBorder);
             worldBorder.setSize(worldBorderSize, 15);
         } catch (Exception e) {
-            sendErrorMessage(e, 163);
+            sendErrorMessage(e, "onEnable error");
         }
         getServer().getPluginManager().registerEvents(new PlayerEventListener(this), this);
         this.initCommand();
@@ -131,36 +131,36 @@ public final class EtherExp extends JavaPlugin {
             for (Player player : world.getPlayers())
                 player.sendMessage(ChatColor.YELLOW + "Пространство сужается. " + "Текущее значение барьера: " + newWorldBorderSize);
         } catch (Exception e) {
-            sendErrorMessage(e, 115);
+            sendErrorMessage(e, "setSizeBorder error");
         }
     }
     private void initCommand() {
         try {
             this.registerCommand(this.getCommand("setborderradius"), new SetBorderRadius(this));
             this.registerCommand(this.getCommand("setborderangle"), new SetBorderAngle(this));
+            this.registerCommand(this.getCommand("setperiodnarrworld"), new SetPeriodNarrWorld(this));
+            this.registerCommand(this.getCommand("setpercentnarrworld"), new EtherExpReload(this, this.config));
+            this.registerCommand(this.getCommand("setlobby"), new SetLobby(this));
+            this.registerCommand(this.getCommand("setpercentangle"), new SetPercentAngle(this));
             this.registerCommand(this.getCommand("resetborderangle"), new ResetBorderAngle(this));
             this.registerCommand(this.getCommand("resetborderradius"), new ResetBorderRadius(this));
+            this.registerCommand(this.getCommand("resetlobby"), new ResetLobby(this));
+            this.registerCommand(this.getCommand("addtobanlist"), new AddToBanList(this));
+            this.registerCommand(this.getCommand("addtoadminlist"), new AddToAdminList(this));
+            this.registerCommand(this.getCommand("addopadmin"), new AddOpAdmin(this));
+            this.registerCommand(this.getCommand("removetobanlist"), new RemoveToBanList(this));
+            this.registerCommand(this.getCommand("removetoadminlist"), new RemoveToAdminList(this));
             this.registerCommand(this.getCommand("getworld"), new GetWorld(this));
             this.registerCommand(this.getCommand("penis"), new Penis(this));
             this.registerCommand(this.getCommand("lobby"), new Lobby(this));
             this.registerCommand(this.getCommand("hub"), new Lobby(this));
-            this.registerCommand(this.getCommand("setlobby"), new SetLobby(this));
-            this.registerCommand(this.getCommand("resetlobby"), new ResetLobby(this));
-            this.registerCommand(this.getCommand("addtobanlist"), new AddToBanList(this));
-            this.registerCommand(this.getCommand("removetobanlist"), new RemoveToBanList(this));
-            this.registerCommand(this.getCommand("addtoadminlist"), new AddToAdminList(this));
-            this.registerCommand(this.getCommand("removetoadminlist"), new RemoveToAdminList(this));
-            this.registerCommand(this.getCommand("addopadmin"), new AddOpAdmin(this));
-            this.registerCommand(this.getCommand("setpercentangle"), new SetPercentAngle(this));
             this.registerCommand(this.getCommand("stopborder"), new StopBorder(this));
             this.registerCommand(this.getCommand("restartborder"), new RestartBorder(this));
             this.registerCommand(this.getCommand("banlist"), new BanList(this));
             this.registerCommand(this.getCommand("adminlist"), new AdminList(this));
             this.registerCommand(this.getCommand("etherexp"), new EtherExpReload(this, this.config));
-            this.registerCommand(this.getCommand("setperiodnarrworld"), new SetPeriodNarrWorld(this));
-            //this.registerCommand(this.getCommand("setpercentnarrworld"), new EtherExpReload(this, this.config));
         } catch (Exception e) {
-            sendErrorMessage(e, 187);
+            sendErrorMessage(e, "initCommand error");
         }
     }
     private void registerCommand(PluginCommand command, CommandExecutor executor) {
@@ -168,7 +168,7 @@ public final class EtherExp extends JavaPlugin {
             command.setExecutor(executor);
         }
     }
-    public static void sendErrorMessage(Exception e, int string) {
+    public static void sendErrorMessage(Exception e, String string) {
         System.out.println(ChatColor.RED + "EtherExp: Ошибка " + e.getMessage() + " Строка: " + string);
     }
     public void teleportToLobby(Player player) {
@@ -179,7 +179,7 @@ public final class EtherExp extends JavaPlugin {
             player.sendMessage(ChatColor.AQUA + "Вы были телепортированы в лобби!");
             System.out.println(ChatColor.GREEN + "Игрок " + player.getName() + " телепортирован в лобби");
         } catch (Exception e) {
-            sendErrorMessage(e, 251);
+            sendErrorMessage(e, "teleportToLobby error");
         }
     }
     public void teleportToWorld(Player player) {
@@ -193,7 +193,7 @@ public final class EtherExp extends JavaPlugin {
                 System.out.println(ChatColor.GREEN + "EtherExp: Игрок " + player.getName() + " телепортирован в мир World");
             }
         } catch (Exception e) {
-            sendErrorMessage(e, 438);
+            sendErrorMessage(e, "teleportToWorld error");
         }
     }
     public static Player getPlayerByName(String playerName) {
@@ -225,7 +225,7 @@ public final class EtherExp extends JavaPlugin {
             change_angle = new_change_angle;
             System.out.println(ChatColor.GREEN + "Текущее значение угла: " + change_angle);
         } catch (Exception e) {
-            sendErrorMessage(e, 490);
+            sendErrorMessage(e, "changeAngle error");
         }
     }
     public void changeRadius(Player player, double new_change_radius) {
@@ -234,7 +234,7 @@ public final class EtherExp extends JavaPlugin {
             change_radius = new_change_radius;
             System.out.println(ChatColor.GREEN + "Текущее значение радиуса: " + change_radius);
         } catch (Exception e) {
-            sendErrorMessage(e, 499);
+            sendErrorMessage(e, "changeRadius error");
         }
     }
     @Override
@@ -254,7 +254,7 @@ public final class EtherExp extends JavaPlugin {
             radius += change_radius;
             angle += change_angle;
         } catch (Exception e) {
-            sendErrorMessage(e, 518);
+            sendErrorMessage(e, "setCenterBorder error");
         }
     }
     public void sendMessageAdmin(String message) {
@@ -265,7 +265,7 @@ public final class EtherExp extends JavaPlugin {
                     player.sendMessage(message);
             }
         } catch (Exception e) {
-            sendErrorMessage(e, 530);
+            sendErrorMessage(e, "sendMessageAdmin error");
         }
     }
 }

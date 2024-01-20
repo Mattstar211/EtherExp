@@ -65,7 +65,7 @@ public class SaveLoadExample implements Serializable {
             writer.newLine();
             System.out.println(ChatColor.GREEN + "Конфигурационный файл сохранен по пути: " + configFile.getAbsolutePath());
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 66);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
         }
     }
     public void loadConfigurationFromFile(String folderPath, String fileName, EtherExp configuration) {
@@ -148,7 +148,7 @@ public class SaveLoadExample implements Serializable {
             }
             System.out.println(ChatColor.GREEN + "Конфигурационный файл загружен!");
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 149);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
             System.out.println(ChatColor.RED + "Конфигурационный файл не загружен!");
         }
     }
@@ -180,7 +180,7 @@ public class SaveLoadExample implements Serializable {
 
             System.out.println("Значение поля " + fieldName + " успешно обновлено.");
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 189);
+            EtherExp.sendErrorMessage(e, "updateConfigFile error");
         }
     }
 }

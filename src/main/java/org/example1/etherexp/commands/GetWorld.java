@@ -26,7 +26,7 @@ public class GetWorld implements CommandExecutor {
                 else player.sendMessage("Мир " + nameWorld + " не существует!");
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 406);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{

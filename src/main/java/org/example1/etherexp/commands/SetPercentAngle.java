@@ -21,7 +21,7 @@ public class SetPercentAngle implements CommandExecutor {
                     player.sendMessage("Приращение угла изменено на " + new_change_angle);
                     return true;
                 } catch (NumberFormatException e) {
-                    EtherExp.sendErrorMessage(e, 24);
+                    EtherExp.sendErrorMessage(e, this.getClass().getName());
                     return false;
                 }
             }

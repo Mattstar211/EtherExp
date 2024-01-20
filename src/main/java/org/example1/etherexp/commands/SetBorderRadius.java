@@ -20,7 +20,7 @@ public class SetBorderRadius implements CommandExecutor {
                 else player.sendMessage(ChatColor.GREEN + "Использование: /setborderradius <радиус>");
                 return true;
             } catch (NumberFormatException e) {
-                EtherExp.sendErrorMessage(e, 423);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 player.sendMessage(ChatColor.RED + "Вводи радиус через точку!");
                 return false;
             }

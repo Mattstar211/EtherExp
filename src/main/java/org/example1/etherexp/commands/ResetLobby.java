@@ -29,7 +29,7 @@ public class ResetLobby implements CommandExecutor {
                 System.out.println("EtherExp: Текущие координаты спавна: X: " + xLobby + " Y: " + yLobby + " Z: " + zLobby + " Yaw: " + yawLobby + " Pitch: " + pitchLobby);
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 380);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{

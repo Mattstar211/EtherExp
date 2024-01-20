@@ -20,7 +20,7 @@ public class AddOpAdmin implements CommandExecutor {
             if (player3 != null && !player3.isOp()) player3.setOp(true);
             return true;
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 23);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
             return false;
         }
     }

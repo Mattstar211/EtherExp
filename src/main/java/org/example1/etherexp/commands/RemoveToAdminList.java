@@ -20,7 +20,7 @@ public class RemoveToAdminList implements CommandExecutor {
                     plugin.getNameAdmin().remove(namePlayer);
                     return true;
                 } catch (Exception e) {
-                    EtherExp.sendErrorMessage(e, 366);
+                    EtherExp.sendErrorMessage(e, this.getClass().getName());
                     return false;
                 }
             }

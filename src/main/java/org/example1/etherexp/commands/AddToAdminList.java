@@ -20,7 +20,7 @@ public class AddToAdminList implements CommandExecutor {
                     plugin.getNameAdmin().add(namePlayer);
                     return true;
                 } catch (Exception e) {
-                    EtherExp.sendErrorMessage(e, 357);
+                    EtherExp.sendErrorMessage(e, this.getClass().getName());
                     return false;
                 }
             }

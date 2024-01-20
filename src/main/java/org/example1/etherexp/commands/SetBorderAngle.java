@@ -20,7 +20,7 @@ public class SetBorderAngle implements CommandExecutor {
                 else player.sendMessage(ChatColor.GREEN + "Использование: /setborderangle <угол>");
                 return true;
             } catch (NumberFormatException e) {
-                EtherExp.sendErrorMessage(e, 427);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 player.sendMessage(ChatColor.RED + "Вводи угол через точку!");
                 return false;
             }

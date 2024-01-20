@@ -21,7 +21,7 @@ public class Lobby implements CommandExecutor {
             if (!isInCombat(player)) plugin.teleportToLobby(player);
             return true;
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 290);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
             return false;
         }
     }

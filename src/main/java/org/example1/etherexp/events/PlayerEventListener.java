@@ -148,7 +148,7 @@ public class PlayerEventListener implements Listener {
                 System.out.println(ChatColor.GREEN + "Текущее значение барьера: " + plugin.getWorldBorderSize());
             }
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 211);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
         }
     }
     @EventHandler
@@ -166,7 +166,7 @@ public class PlayerEventListener implements Listener {
                 plugin.teleportToWorld(player);
             }
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 220);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
         }
     }
     @EventHandler
@@ -174,7 +174,7 @@ public class PlayerEventListener implements Listener {
         try {
             plugin.teleportToLobby(event.getPlayer());
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 239);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
         }
     }
     private void killBanPlayer(Player player) {

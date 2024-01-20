@@ -16,11 +16,11 @@ public class ResetBorderRadius implements CommandExecutor {
         Player player = (Player)sender;
         if(player.isOp()){
             try {
-                plugin.setChange_radius(0.1);
-                System.out.println("Текущее значение угла: " + 0.1);
+                plugin.setChange_radius(0.002);
+                System.out.println("Текущее значение угла: 0.002");
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 423);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{

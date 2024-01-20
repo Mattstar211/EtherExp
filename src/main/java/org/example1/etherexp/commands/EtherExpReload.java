@@ -39,7 +39,7 @@ public class EtherExpReload implements CommandExecutor {
                         return false;
                     }
                 }catch (Exception e){
-                    EtherExp.sendErrorMessage(e, 489);
+                    EtherExp.sendErrorMessage(e, this.getClass().getName());
                     player.sendMessage(ChatColor.RED + "Ошибка загрузки конфига!");
                     return false;
                 }

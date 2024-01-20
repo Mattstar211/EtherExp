@@ -21,7 +21,7 @@ public class AddToBanList implements CommandExecutor {
                     plugin.getNameBan().add(namePlayer);
                     return true;
                 } catch (Exception e) {
-                    EtherExp.sendErrorMessage(e, 348);
+                    EtherExp.sendErrorMessage(e, this.getClass().getName());
                     return false;
                 }
             }

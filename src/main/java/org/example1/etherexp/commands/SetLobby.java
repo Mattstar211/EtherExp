@@ -26,7 +26,7 @@ public class SetLobby implements CommandExecutor {
                 System.out.println("EtherExp: Текущие координаты спавна: X: " + lobbyLocation.getX() + " Y: " + lobbyLocation.getY() + " Z: " + lobbyLocation.getZ() + " Yaw: " + lobbyLocation.getYaw() + " Pitch: " + lobbyLocation.getPitch());
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 395);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{

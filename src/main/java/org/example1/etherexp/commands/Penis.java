@@ -16,7 +16,7 @@ public class Penis implements CommandExecutor {
             if(!player.getWorld().getName().equals("world")) plugin.teleportToWorld(player);
             return true;
         } catch (Exception e) {
-            EtherExp.sendErrorMessage(e, 19);
+            EtherExp.sendErrorMessage(e, this.getClass().getName());
             return false;
         }
     }

@@ -21,7 +21,7 @@ public class RestartBorder implements CommandExecutor {
                     pl.sendMessage(ChatColor.YELLOW + "Пространство двигается!!");
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 23);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{

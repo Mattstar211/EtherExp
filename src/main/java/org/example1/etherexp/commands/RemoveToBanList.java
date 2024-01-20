@@ -20,7 +20,7 @@ public class RemoveToBanList implements CommandExecutor {
                     plugin.getNameBan().remove(namePlayer);
                     return true;
                 } catch (Exception e) {
-                    EtherExp.sendErrorMessage(e, 339);
+                    EtherExp.sendErrorMessage(e, this.getClass().getName());
                     return false;
                 }
             }

@@ -16,11 +16,11 @@ public class ResetBorderAngle implements CommandExecutor {
         Player player = (Player) sender;
         if(player.isOp()) {
             try {
-                plugin.setChange_angle(0.006);
-                System.out.println("Текущее значение угла: 0.006");
+                plugin.setChange_angle(0.0004);
+                System.out.println("Текущее значение угла: 0.0004");
                 return true;
             } catch (Exception e) {
-                EtherExp.sendErrorMessage(e, 415);
+                EtherExp.sendErrorMessage(e, this.getClass().getName());
                 return false;
             }
         }else{
