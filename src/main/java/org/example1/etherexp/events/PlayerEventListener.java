@@ -1,6 +1,7 @@
 package org.example1.etherexp.events;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ import org.example1.etherexp.EtherExp;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class PlayerEventListener implements Listener {
     private static final List<String> advancementsList = Arrays.asList(
@@ -151,16 +153,19 @@ public class PlayerEventListener implements Listener {
             EtherExp.sendErrorMessage(e, this.getClass().getName());
         }
     }
+    private boolean PosToPlayer(Location playerLoc, Location pos1, Location pos2){
+        return (playerLoc.getX() >= pos1.getX() && playerLoc.getY() >= pos1.getY() && playerLoc.getZ() >= pos1.getZ()) && (playerLoc.getX() <= pos2.getX() && playerLoc.getY() <= pos2.getY() && playerLoc.getZ() <= pos2.getZ());
+    }
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         String nameWorld = player.getWorld().getName();
-        double x = player.getLocation().getX();
-        double y = player.getLocation().getY();
-        double z = player.getLocation().getZ();
+        Location playerLocation = player.getLocation();
+        Location position1Portal = plugin.getPosition1Portal();
+        Location position2Portal = plugin.getPosition2Portal();
         try {
             killBanPlayer(player);
-            if(nameWorld.equals("lobby") && x > 7 && x < 12 && y >= 6 && y <= 9 && z > -1 && z < 0){
+            if(nameWorld.equals("lobby") && PosToPlayer(playerLocation, position1Portal, position2Portal)){
                 System.out.println(ChatColor.GREEN + "Игрок " + player.getName() + " зашел в портал");
                 plugin.sendMessageAdmin("Игрок " + player.getName() + " зашел в портал");
                 plugin.teleportToWorld(player);

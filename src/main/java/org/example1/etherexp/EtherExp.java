@@ -24,9 +24,11 @@ public final class EtherExp extends JavaPlugin {
     private double change_angle = 0.0017;
     private double temp_change_angle = 0.0;
     private int change_angle_percent = 1;
-    private double xLobby = 9.606411547450097;
-    private double yLobby = 7.0;
-    private double zLobby = 26.573462861292374;
+    private double xLobby = 5.456;
+    private double yLobby = 29.0;
+    private double zLobby = -21.443;
+    private Location position1Portal;
+    private Location position2Portal;
     private float yawLobby = -180;
     private float pitchLobby = 0;
     private double xBorder = 0;
@@ -76,12 +78,22 @@ public final class EtherExp extends JavaPlugin {
     public double getTemp_change_radius(){return temp_change_radius;}
     public void setTemp_change_angle(double temp_change_angle){this.temp_change_angle = temp_change_angle;}
     public double getTemp_change_angle(){return temp_change_angle;}
+    public Location getPosition1Portal(){return position1Portal;}
+    public Location getPosition2Portal(){return position2Portal;}
+    public void setPosition1Portal(Location position1Portal){this.position1Portal = position1Portal;}
+    public void setPosition2Portal(Location position2Portal){this.position2Portal = position2Portal;}
+    public void setPosition1Portal(int x, int y, int z){this.position1Portal = new Location(getWorldCast("lobby"), x, y, z);}
+    public void setPosition2Portal(int x, int y, int z){this.position2Portal = new Location(getWorldCast("lobby"), x, y, z);}
     @Override
     public void onEnable() {
         config = new SaveLoadExample();
         try {
             System.out.println("EtherExp: worldBorderSize1: " + worldBorderSize);
             config.loadConfigurationFromFile("plugins/EtherExp", "config.yml", this);
+            if(position1Portal == null){
+                position1Portal = new Location(getWorldCast("lobby"), 4, 27, 1);
+                position2Portal = new Location(getWorldCast("lobby"), 7, 31, 2);
+            }
             System.out.println("EtherExp: worldBorderSize2: " + worldBorderSize);
             WorldBorder worldBorder = getWorldCast("world").getWorldBorder();
             worldBorder.setCenter(xBorder, zBorder);

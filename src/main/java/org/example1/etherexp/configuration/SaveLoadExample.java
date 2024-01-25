@@ -1,13 +1,11 @@
 package org.example1.etherexp.configuration;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.example1.etherexp.EtherExp;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SaveLoadExample implements Serializable {
     public void saveConfigurationToFile(String folderPath, String fileName, EtherExp configuration) {
@@ -52,6 +50,12 @@ public class SaveLoadExample implements Serializable {
             writer.write("temp_change_angle: " + configuration.getTemp_change_angle());
             writer.newLine();
             writer.write("temp_change_radius: " + configuration.getTemp_change_radius());
+            writer.newLine();
+            Location position1Portal = configuration.getPosition1Portal();
+            Location position2Portal = configuration.getPosition1Portal();
+            writer.write("position1Portal: " + position1Portal.getX() + " " + position1Portal.getY() + " " + position1Portal.getZ());
+            writer.newLine();
+            writer.write("position2Portal: " + position2Portal.getX() + " " + position2Portal.getY() + " " + position2Portal.getZ());
             writer.newLine();
             writer.write("nameBan: ");
             for (String name : configuration.getNameBan()) {
@@ -142,6 +146,20 @@ public class SaveLoadExample implements Serializable {
                             break;
                         case "periodNarrWorld":
                             configuration.setPeriodNarrWorld(Integer.parseInt(variableValue));
+                            break;
+                        case "position1Portal":
+                            String[] coords = variableValue.split(" ");
+                            int x = Integer.parseInt(coords[0]);
+                            int y = Integer.parseInt(coords[1]);
+                            int z = Integer.parseInt(coords[2]);
+                            configuration.setPosition1Portal(x, y, z);
+                            break;
+                        case "position2Portal":
+                            String[] coords1 = variableValue.split(" ");
+                            int x1 = Integer.parseInt(coords1[0]);
+                            int y1 = Integer.parseInt(coords1[1]);
+                            int z1 = Integer.parseInt(coords1[2]);
+                            configuration.setPosition1Portal(x1, y1, z1);
                             break;
                     }
                 }
